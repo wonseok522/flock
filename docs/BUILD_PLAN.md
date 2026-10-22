@@ -155,3 +155,74 @@ Phases run in order. Within a phase, the three roles work in parallel. Don't sta
 - [ ] `docs/evidence/`: Grok Bot setup, Notion HQ, Zero pipeline, Cursor `Criteria:` replies
 - [ ] Real numbers in `DEMO.md`: matches tonight, average seconds to match, group-chat baseline
 - [ ] Worker and ai-service running on the demo laptop; fallback labels visible if they stop
+
+---
+
+## 9. What makes Flock hard to copy
+
+SafeUP (the closest existing app) reached ~100k users but its guardian networks stayed patchy outside Israel: strangers spread across a whole city, and nobody nearby when you need them. These three ideas fix that density problem by riding on the community, which is exactly what the judges score ("use of community context", "10x over today's tooling"). As with the rest of this plan, **which of these ship is the team lead's call.**
+
+| # | Idea | Why it's hard to copy |
+|---|---|---|
+| X1 | Event-native matching | Matching starts from a shared event, not a stranger's location |
+| X2 | Bot in society Discord + WhatsApp chats | No app download; lives where students already talk |
+| X3 | Anonymised walk-home data for the SU | Turns Flock from "an app" into community infrastructure |
+
+### X1. Event-native matching
+
+Don't wait for someone to feel unsafe and open the app. When an event ends, Flock **proactively** asks "Heading home?" and groups people who were at the same event.
+
+- **Trigger:** session `ends_at` (from the Luma import in Step 3, plus SU calendar and library closing times) minus 10 minutes.
+- **What the student sees:** a push / in-app card: *"Late study ends 23:30. 5 people are heading north. Leave together at 23:35?"* One tap calls `request_walk()`.
+- **Matching rule:** prefer candidates from the **same session** first, then the same community, then anyone verified. The shared session becomes the first trust reason ("At Late study with you tonight").
+- **Builds on:** Step 2 (sessions), Step 3 (Luma import), Step 4 (walk flow), Step 6 (worker schedules the nudge).
+- **Partners:** Supabase (sessions, `request_walk`), Cognee (same-session edge), Luma data.
+- **Demo line:** "Nobody has to ask. The event ending *is* the request."
+
+### X2. A bot that lives in society chats (Discord + WhatsApp)
+
+Students already ask "anyone going towards X?" in group chats. Put Flock **in** those chats instead of asking them to switch apps.
+
+**Flow (both platforms):**
+1. Event ends → bot posts in the society's chat: *"Jazz Night's wrapping up. Who's heading home? React / reply with your station."*
+2. Students react or reply with a station → bot groups them by direction using the same `request_walk()` RPC.
+3. Bot replies with the group (**first names only**) and a link to the web app for live check-in.
+4. Once everyone taps ✅ "home", the bot closes the group. A missed check-in posts a nudge in the thread and raises an incident (same path as Step 7).
+
+**Discord** (primary, fully supported)
+- Official Discord API via `discord.js` in `bot/` (the worker already owns Discord per the doc-conflicts decision).
+- Use a thread per event, reactions or a `/heading <station>` slash command, and buttons for ✅ check-in.
+- Linking: `/link` command sends a magic link that ties `discord_user_id` to the verified Flock member. Unlinked users are told to verify first and are never matched.
+
+**WhatsApp** (stretch, most UK student societies live here)
+- **Official Cloud API:** free to start, but it only talks 1:1 with people who message a business number, outbound messages need approved templates, and group support is limited. Use it for 1:1: a student messages the Flock number "home Camden" → gets matched → gets check-in prompts.
+- **Group bots** need an unofficial library (Baileys / whatsapp-web.js). These are **against WhatsApp's terms**, so only use a spare test number for the demo and say so honestly. Don't ship it to real societies.
+- Same rules as Discord: verified members only, first names only, stations not addresses.
+
+- **Builds on:** Step 6 (worker + Discord threads), Step 7 (check-ins), G6 (bot copy from Grok Bot).
+- **Partners:** Supabase, Grok Bot (writes the bot copy and posts session reminders), Discord / WhatsApp from the hackathon integrations list.
+- **Demo line:** "Zero downloads. It shows up in the chat your society already uses."
+
+### X3. Walk-home data for the student union
+
+Every matched walk and check-in is a data point about where and when students travel home late. Aggregated, it's evidence the SU can take to the university.
+
+- **What it shows:** a heatmap of late-night walks by **departure venue → destination station** and **hour**, plus counts of solo walks and missed check-ins.
+- **Privacy rules (non-negotiable):**
+  - Stations and venues only, never routes between them or home addresses.
+  - Aggregate only; hide any cell with **fewer than 5 walks** so no one is identifiable.
+  - No names, no member IDs, no incident details in the export.
+- **Where it lives:** a new tab on `/dashboard` for organisers + a weekly CSV/Notion page the society can forward to the SU.
+- **Use cases:** argue for better lighting on a busy route, later library shuttles, security patrols at specific times, or a later SU night bus.
+- **Builds on:** Step 9 (dashboard), Notion Tonight dashboard (worker).
+- **Partners:** Supabase (aggregate view, service role only, same treatment as S6), Notion (weekly report page), Grok Bot (writes the weekly summary from the numbers).
+- **Demo line:** "Every walk home makes the next one safer, because the SU can finally see where students need help."
+
+### Build order for X1–X3
+
+| Phase | Add |
+|---|---|
+| 3. Matching | X1 nudge from the worker when a session is ending |
+| 4. Safety loop | X2 Discord: event thread, `/heading`, ✅ buttons, missed check-in nudge |
+| 5. Trust, growth, admin | X3 aggregate view + dashboard tab |
+| 6. Stretch | X2 WhatsApp 1:1 via Cloud API (group bot only on a test number) |
