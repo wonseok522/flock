@@ -1,0 +1,32 @@
+---
+description: Flock project rules — read CLAUDE.md first
+alwaysApply: true
+---
+
+# Flock — Cursor rules
+
+**CLAUDE.md at the repo root is the source of truth.** Read it before every task.
+
+## RULE #1 (overrides everything)
+
+Fully use the partner integrations — **Supabase, Cognee, Zero, Notion, Grok Bot, Cursor** — and write every feature to score on the six judging criteria:
+
+1. Technical execution
+2. How much Grok Bot and Cursor architected it
+3. Use of community context
+4. 10x–20x improvement over today's tooling
+5. Real-world usefulness
+6. Demo quality
+
+Start every reply with: `Criteria: <...> | Partners: <...>`.
+If a feature hits no criterion and no partner, don't build it — say so.
+If a partner is missing or mocked, flag it at the end of the reply.
+
+## Always
+
+- Stack, repo layout, safety rules and definition of done: follow CLAUDE.md.
+- Commit messages start with `[cursor]`. Append a line to `BUILD_LOG.md` after each step.
+- Stations only, never home addresses. First names only. Blocklist stores sha256 hashes only.
+- A human confirms every report and block.
+- Loading, error and empty states on every async action. Labelled fallbacks for every external call.
+- Prompts to follow, in order: `docs/CURSOR_PROMPTS.md`.
