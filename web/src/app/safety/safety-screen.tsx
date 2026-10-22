@@ -168,7 +168,7 @@ export function SafetyScreen() {
       <section aria-labelledby="uni-h" className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
           <Eyebrow>
-            <span id="uni-h">Your university&apos;s security and welfare contacts</span>
+            <span id="uni-h">University security &amp; welfare</span>
           </Eyebrow>
         </div>
         {contacts.status === "loading" ? (
@@ -258,9 +258,9 @@ export function SafetyScreen() {
         <p className="rounded-[14px] bg-surface-2 px-3 py-2 text-[14px] font-semibold">A human decides. Grok Bot only recommends.</p>
       </Card>
 
-      {me.status === "ready" && (
+      {me.status !== "loading" && (
         <div className="flex flex-col gap-2">
-          <p className="text-center text-[14px] text-muted">Signed in as {me.member.first_name}</p>
+          {me.status === "ready" && <p className="text-center text-[14px] text-muted">Signed in as {me.member.first_name}</p>}
           <Button variant="secondary" onClick={signOut} disabled={signingOut}>
             {signingOut ? <Spinner /> : <LogOut aria-hidden="true" />} Sign out
           </Button>

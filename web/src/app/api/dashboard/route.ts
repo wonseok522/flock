@@ -15,6 +15,8 @@ type IncidentRow = {
   member_first_names: string[] | null;
   session_id: string | null;
   report_id: string | null;
+  match_id: string | null;
+  solo_trip_id: string | null;
   notion_page_id: string | null;
   grok_recommendation: string | null;
   alerted_at: string | null;
@@ -30,6 +32,18 @@ type ReportRow = {
 };
 
 const HOUR = 60 * 60 * 1000;
+
+type StationEmbed = { name: string } | { name: string }[] | null;
+type TripRow = { id: string; eta_at: string; stations: StationEmbed };
+type MatchStationsRow = { id: string; checkin_due_at: string; a: { stations: StationEmbed } | null; b: { stations: StationEmbed } | null };
+
+function stationName(e: StationEmbed | undefined): string | null {
+  return (Array.isArray(e) ? e[0]?.name : e?.name) ?? null;
+}
+
+function londonHHMM(iso: string): string {
+  return new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(iso));
+}
 
 function notionUrl(id: string | null | undefined): string | null {
   const clean = id?.replace(/-/g, "").trim();
@@ -62,7 +76,7 @@ export async function GET() {
         .order("ends_at"),
       admin
         .from("incidents")
-        .select("id, kind, status, resolution, member_first_names, session_id, report_id, notion_page_id, grok_recommendation, alerted_at, created_at")
+        .select("id, kind, status, resolution, member_first_names, session_id, report_id, match_id, solo_trip_id, notion_page_id, grok_recommendation, alerted_at, created_at")
         .in("community_id", communityIds)
         .or(`status.eq.open,created_at.gte.${incidentsSince}`)
         .order("created_at", { ascending: false })
@@ -116,7 +130,9 @@ export async function GET() {
     // Incident details: session titles + report evidence (lead-only view).
     const missingSessionIds = [...new Set(incidents.map((i) => i.session_id).filter((id): id is string => !!id && !sessionIds.includes(id)))];
     const reportIds = incidents.map((i) => i.report_id).filter((id): id is string => !!id);
-    const [extraSessions, reports] = await Promise.all([
+    const tripIds = [...new Set(incidents.map((i) => i.solo_trip_id).filter((id): id is string => !!id))];
+    const matchIds = [...new Set(incidents.map((i) => i.match_id).filter((id): id is string => !!id))];
+    const [extraSessions, reports, trips, walkMatches] = await Promise.all([
       missingSessionIds.length
         ? admin.from("study_sessions").select("id, title, ends_at").in("id", missingSessionIds).then((r) => rows<SessionRow>(r, "incident sessions"))
         : Promise.resolve([] as SessionRow[]),
@@ -127,7 +143,31 @@ export async function GET() {
             .in("id", reportIds)
             .then((r) => rows<ReportRow>(r, "incident reports"))
         : Promise.resolve([] as ReportRow[]),
+      tripIds.length
+        ? admin.from("solo_trips").select("id, eta_at, stations(name)").in("id", tripIds).then((r) => rows<TripRow>(r, "incident trips"))
+        : Promise.resolve([] as TripRow[]),
+      matchIds.length
+        ? admin
+            .from("matches")
+            .select("id, checkin_due_at, a:walk_requests!matches_request_a_fkey(stations(name)), b:walk_requests!matches_request_b_fkey(stations(name))")
+            .in("id", matchIds)
+            .then((r) => rows<MatchStationsRow>(r, "incident matches"))
+        : Promise.resolve([] as MatchStationsRow[]),
     ]);
+    const tripById = new Map(trips.map((t) => [t.id, t]));
+    const walkById = new Map(walkMatches.map((m) => [m.id, m]));
+    // One plain line: where they were heading and when they were due (stations only).
+    const detailOf = (i: IncidentRow): string | null => {
+      const t = i.solo_trip_id ? tripById.get(i.solo_trip_id) : undefined;
+      const due = (iso: string) => (i.kind === "report" ? "" : ` · check-in due ${londonHHMM(iso)}`);
+      if (t) return `Solo walk to ${stationName(t.stations) ?? "a station"}${due(t.eta_at)}`;
+      const m = i.match_id ? walkById.get(i.match_id) : undefined;
+      if (m) {
+        const names = [...new Set([stationName(m.a?.stations), stationName(m.b?.stations)].filter((n): n is string => !!n))];
+        return `Walk to ${names.join(" / ") || "a station"}${due(m.checkin_due_at)}`;
+      }
+      return null;
+    };
     const titleById = new Map([...sessions, ...extraSessions].map((s) => [s.id, s.title]));
     const reportById = new Map(reports.map((r) => [r.id, r]));
     const reporterIds = [...new Set(reports.map((r) => r.reporter_id))];
@@ -149,6 +189,7 @@ export async function GET() {
           resolution: i.resolution,
           first_names: i.member_first_names ?? [],
           session_title: i.session_id ? (titleById.get(i.session_id) ?? null) : null,
+          detail: detailOf(i),
           created_at: i.created_at,
           alerted_at: i.alerted_at,
           notion_url: notionUrl(i.notion_page_id),

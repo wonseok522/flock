@@ -121,7 +121,7 @@ export function SosScreen() {
 
         {hasWalk && (
           <section aria-labelledby="who-gets-it">
-            <Eyebrow className="text-danger-soft">
+            <Eyebrow className="text-danger-soft!">
               <span id="who-gets-it" className="inline-flex items-center gap-1.5">
                 <MapPin className="size-3.5" aria-hidden="true" /> Who receives your location
               </span>
@@ -138,7 +138,7 @@ export function SosScreen() {
         )}
 
         <section aria-labelledby="non-emergency">
-          <Eyebrow className="text-danger-soft">
+          <Eyebrow className="text-danger-soft!">
             <span id="non-emergency">Not an emergency?</span>
           </Eyebrow>
           <div className="mt-3 grid grid-cols-2 gap-3">

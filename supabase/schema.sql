@@ -200,23 +200,33 @@ create view overdue_solo_trips as
   where status = 'active' and eta_at < now() and alerted_at is null;
 
 -- ───────────── Helpers ─────────────
-create or replace function is_community_member(p_community uuid)
-returns boolean language sql stable security definer set search_path = public, extensions as $$
-  select exists (select 1 from community_members
-                 where community_id = p_community and member_id = auth.uid());
-$$;
-
-create or replace function is_session_member(p_session uuid)
-returns boolean language sql stable security definer set search_path = public, extensions as $$
-  select exists (select 1 from session_members
-                 where session_id = p_session and member_id = auth.uid());
-$$;
-
 create or replace function is_blocked(p_member uuid)
 returns boolean language sql stable security definer set search_path = public, extensions as $$
   select exists (select 1 from members m join blocklist b on b.handle_hash = m.handle_hash
                  where m.id = p_member);
 $$;
+
+-- Blocked members lose access to every verified space (sessions, walks, live location).
+create or replace function is_community_member(p_community uuid)
+returns boolean language sql stable security definer set search_path = public, extensions as $$
+  select exists (select 1 from community_members
+                 where community_id = p_community and member_id = auth.uid())
+     and not is_blocked(auth.uid());
+$$;
+
+create or replace function is_session_member(p_session uuid)
+returns boolean language sql stable security definer set search_path = public, extensions as $$
+  select exists (select 1 from session_members
+                 where session_id = p_session and member_id = auth.uid())
+     and not is_blocked(auth.uid());
+$$;
+
+-- Lets the app show "This account can't use Flock" instead of empty screens.
+create or replace function am_i_blocked()
+returns boolean language sql stable security definer set search_path = public, extensions as $$
+  select is_blocked(auth.uid());
+$$;
+
 
 create or replace function require_member()
 returns members language plpgsql stable security definer set search_path = public, extensions as $$
@@ -286,10 +296,10 @@ returns table (
   select s.id, s.title, s.location_name,
          st_y(s.location::geometry), st_x(s.location::geometry),
          s.starts_at, s.ends_at, s.source, c.name,
-         (select count(*) from session_members sm where sm.session_id = s.id),
+         (select count(*) from session_members sm where sm.session_id = s.id and not is_blocked(sm.member_id)),
          exists (select 1 from session_members sm where sm.session_id = s.id and sm.member_id = auth.uid()),
          array(select m.first_name from session_members sm join members m on m.id = sm.member_id
-               where sm.session_id = s.id order by sm.joined_at limit 6)
+               where sm.session_id = s.id and not is_blocked(m.id) order by sm.joined_at limit 6)
   from study_sessions s join communities c on c.id = s.community_id
   where is_community_member(s.community_id)
     and s.ends_at > now() - interval '3 hours'
@@ -526,6 +536,21 @@ language sql stable security definer set search_path = public, extensions as $$
   left join study_sessions s on s.id = t.session_id
   where t.id = p_trip and t.member_id = auth.uid();
 $$;
+
+-- "Add 10 min" on the solo timer: only before the worker has alerted anyone.
+create or replace function extend_solo(p_trip uuid, p_minutes int)
+returns timestamptz language plpgsql security definer set search_path = public, extensions as $$
+declare me members; v_eta timestamptz;
+begin
+  me := require_member();
+  if p_minutes not between 1 and 60 then raise exception 'bad_eta'; end if;
+  update solo_trips
+     set eta_at = least(greatest(eta_at, now()) + make_interval(mins => p_minutes), now() + interval '180 minutes')
+   where id = p_trip and member_id = me.id and status = 'active' and alerted_at is null
+  returning eta_at into v_eta;
+  if v_eta is null then raise exception 'trip_not_active'; end if;
+  return v_eta;
+end $$;
 
 -- ───────────── Check-ins ─────────────
 -- need_help creates an incident (the worker posts it to Notion + Discord).

@@ -6,7 +6,7 @@ import type { DecideAction } from "@/app/dashboard/types";
 
 const ACTIONS: DecideAction[] = ["confirm_block", "reject", "calling", "mark_safe"];
 
-type IncidentRow = { id: string; kind: "missed_checkin" | "help" | "report"; status: string; community_id: string | null; report_id: string | null };
+type IncidentRow = { id: string; kind: "missed_checkin" | "help" | "report"; status: string; community_id: string | null; report_id: string | null; match_id: string | null; solo_trip_id: string | null };
 type ReportRow = { id: string; kind: string; status: string; reported_member_id: string | null };
 
 export async function POST(request: Request) {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   try {
     const { data: incData, error: incErr } = await admin
       .from("incidents")
-      .select("id, kind, status, community_id, report_id")
+      .select("id, kind, status, community_id, report_id, match_id, solo_trip_id")
       .eq("id", incidentId)
       .maybeSingle();
     if (incErr) throw incErr;
@@ -96,6 +96,12 @@ export async function POST(request: Request) {
         : { status: "resolved", resolution: "Marked safe by a safety lead" };
     const { error: updErr } = await admin.from("incidents").update(update).eq("id", incident.id);
     if (updErr) throw updErr;
+    // A lead confirmed they're safe: close the walk / timer too, so the
+    // session's "Walking home now" list stops showing "Needs check".
+    if (action === "mark_safe") {
+      if (incident.match_id) await admin.from("matches").update({ status: "home_safe" }).eq("id", incident.match_id).in("status", ["missed_checkin", "help"]);
+      if (incident.solo_trip_id) await admin.from("solo_trips").update({ status: "home_safe" }).eq("id", incident.solo_trip_id).in("status", ["overdue", "help"]);
+    }
     return json(200, { ok: true });
   } catch (e) {
     console.error("[api/dashboard/decide] failed:", e instanceof Error ? e.message : e);

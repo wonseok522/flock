@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { Plus } from "lucide-react";
-import { Screen, ScreenTitle } from "@/components/app-shell";
+import { Screen } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { EmptyState, ErrorCard, Eyebrow, LoadingScreen, Skeleton } from "@/components/flock";
 import { useMember } from "@/lib/use-member";
@@ -75,10 +75,13 @@ export function SessionsScreen() {
 
   return (
     <Screen>
-      <div className="flex items-start justify-between gap-3">
-        <ScreenTitle sub="Join one so you can get home together when it ends.">Sessions</ScreenTitle>
-        <div className="shrink-0 pt-8">{newButton}</div>
-      </div>
+      <header className="pt-8">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-[28px] leading-tight font-extrabold tracking-[-0.02em]">Sessions</h1>
+          <div className="shrink-0">{newButton}</div>
+        </div>
+        <p className="mt-1 text-[15px] text-muted">Join one so you can get home together when it ends.</p>
+      </header>
 
       {member.status === "error" ? (
         <ErrorCard message={member.message} onRetry={member.reload} />

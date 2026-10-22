@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Siren,
   Sparkles,
+  TrainFront,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -58,9 +59,9 @@ function kindInfo(i: DashboardIncident): { label: string; Icon: typeof BellRing;
 
 function StatTile({ label, value, Icon, danger, sub }: { label: string; value: ReactNode; Icon: typeof BellRing; danger?: boolean; sub?: ReactNode }) {
   return (
-    <div className={cn("flex flex-col gap-2 rounded-[20px] border p-5", danger ? "border-danger bg-danger-surface" : "border-line bg-surface")}>
-      <p className={cn("flex items-center gap-2 text-[14px] font-bold", danger ? "text-danger-soft" : "text-muted")}>
-        <Icon className="size-4" aria-hidden="true" /> {label}
+    <div className={cn("flex flex-col gap-2 rounded-[20px] border p-4 lg:p-5", danger ? "border-danger bg-danger-surface" : "border-line bg-surface")}>
+      <p className={cn("flex items-center gap-2 text-[14px] leading-tight font-bold", danger ? "text-danger-soft" : "text-muted")}>
+        <Icon className="size-4 shrink-0" aria-hidden="true" /> {label}
       </p>
       <p className="font-mono text-[44px] leading-none font-semibold tabular-nums">{value}</p>
       {sub && <p className="text-[13px] text-muted">{sub}</p>}
@@ -132,6 +133,11 @@ function IncidentCard({ incident, onDecided }: { incident: DashboardIncident; on
         <p className="text-[20px] font-extrabold">{names.join(" & ")}</p>
         {incident.session_title && <p className="text-[15px] text-muted">at {incident.session_title}</p>}
       </div>
+      {incident.detail && (
+        <p className="-mt-2 flex items-center gap-2 text-[15px] font-semibold">
+          <TrainFront className="size-4 shrink-0 text-amber" aria-hidden="true" /> {incident.detail}
+        </p>
+      )}
 
       {incident.report && (
         <blockquote className="rounded-[14px] border border-line bg-ink/40 p-3 text-[15px]">
@@ -155,7 +161,7 @@ function IncidentCard({ incident, onDecided }: { incident: DashboardIncident; on
               Discord alerted <span className="font-mono font-semibold">{hhmm(incident.alerted_at)}</span>
             </>
           ) : (
-            <span className="text-muted">Discord alert pending</span>
+            <span className="text-muted">{open ? "Discord alert pending" : "No Discord alert sent"}</span>
           )}
         </li>
         <li className="flex items-center gap-2">
@@ -165,7 +171,7 @@ function IncidentCard({ incident, onDecided }: { incident: DashboardIncident; on
               Open in Notion <ExternalLink className="size-3.5" aria-hidden="true" />
             </a>
           ) : (
-            <span className="text-muted">Notion page pending</span>
+            <span className="text-muted">{open ? "Notion page pending" : "No Notion page"}</span>
           )}
         </li>
         {incident.resolution && (
@@ -176,17 +182,23 @@ function IncidentCard({ incident, onDecided }: { incident: DashboardIncident; on
       </ol>
 
       {/* Grok Bot recommendation: a human decides */}
-      <section className="rounded-[18px] border border-amber bg-ink/40 p-4" aria-label="Grok Bot recommendation">
-        <p className="flex items-center gap-2 text-[13px] font-extrabold tracking-[0.06em] text-amber uppercase">
-          <Sparkles className="size-4" aria-hidden="true" /> Grok Bot recommends
+      {!open && !incident.grok_recommendation ? (
+        <p className="flex items-center gap-2 text-[14px] text-muted">
+          <Sparkles className="size-4 shrink-0" aria-hidden="true" /> Resolved before Grok Bot&apos;s review. A human decided.
         </p>
-        {incident.grok_recommendation ? (
-          <p className="mt-2 text-[16px] whitespace-pre-line">{incident.grok_recommendation}</p>
-        ) : (
-          <p className="mt-2 text-[16px] text-muted">Waiting for Grok Bot&apos;s review in Notion</p>
-        )}
-        <p className="mt-3 text-[13px] font-semibold text-muted">A human decides. Grok Bot only recommends.</p>
-      </section>
+      ) : (
+        <section className="rounded-[18px] border border-amber bg-ink/40 p-4" aria-label="Grok Bot recommendation">
+          <p className="flex items-center gap-2 text-[13px] font-extrabold tracking-[0.06em] text-amber uppercase">
+            <Sparkles className="size-4" aria-hidden="true" /> Grok Bot recommends
+          </p>
+          {incident.grok_recommendation ? (
+            <p className="mt-2 text-[16px] whitespace-pre-line">{incident.grok_recommendation}</p>
+          ) : (
+            <p className="mt-2 text-[16px] text-muted">Waiting for Grok Bot&apos;s review in Notion</p>
+          )}
+          <p className="mt-3 text-[13px] font-semibold text-muted">A human decides. Grok Bot only recommends.</p>
+        </section>
+      )}
 
       {open && (
         <div className="flex flex-col gap-3">
@@ -264,7 +276,8 @@ function Sidebar({ data }: { data: DashboardData }) {
           </a>
         ) : (
           <span className={cn(item, "text-muted hover:bg-transparent")}>
-            <BookOpen className="size-5" aria-hidden="true" /> Safety rules (not linked)
+            <BookOpen className="size-5" aria-hidden="true" /> Safety rules
+            <span className="ml-auto text-[12px] font-semibold">not linked</span>
           </span>
         )}
         <a href="#blocklist" className={item}>
@@ -294,7 +307,10 @@ export function DashboardScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    let inFlight = false;
     async function fetchData() {
+      if (inFlight) return; // slow network: don't stack polls
+      inFlight = true;
       try {
         const res = await fetch("/api/dashboard", { cache: "no-store", signal: AbortSignal.timeout(10000) });
         const body = (await res.json().catch(() => null)) as (DashboardData & { message?: string }) | { message?: string } | null;
@@ -313,6 +329,8 @@ export function DashboardScreen() {
         if (cancelled) return;
         const message = "Can't reach Flock right now. Retrying…";
         setLoad((cur) => (cur.status === "ready" ? { ...cur, refreshError: message } : { status: "error", message: "Can't reach Flock right now." }));
+      } finally {
+        inFlight = false;
       }
     }
     void fetchData();
@@ -432,14 +450,14 @@ export function DashboardScreen() {
         </section>
 
         <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5" aria-label="Tonight in numbers">
-          <StatTile label="Sessions tonight" value={s.sessions} Icon={CalendarDays} />
-          <StatTile label="Walkers" value={s.walkers} Icon={Footprints} sub={s.solo_walks ? `+ ${s.solo_walks} solo check-ins` : undefined} />
+          <StatTile label="Sessions" value={s.sessions} Icon={CalendarDays} />
+          <StatTile label="Walkers" value={s.walkers} Icon={Footprints} sub={s.solo_walks ? `+ ${s.solo_walks} solo check-${s.solo_walks === 1 ? "in" : "ins"}` : undefined} />
           <StatTile label="Matches" value={s.matches} Icon={Users} />
           <StatTile
-            label="Missed check-ins"
+            label={"Missed check\u2011ins"}
             value={s.missed_checkins}
             Icon={BellRing}
-            danger={s.missed_checkins > 0}
+            danger={s.open_missed_checkins > 0}
             sub={s.open_missed_checkins ? `${s.open_missed_checkins} still open` : s.missed_checkins ? "All resolved" : undefined}
           />
           <StatTile label="Open reports" value={s.open_reports} Icon={Flag} />
@@ -478,8 +496,8 @@ export function DashboardScreen() {
                   <span className="font-mono text-[15px] font-semibold text-amber">{hhmm(ss.ends_at)}</span>
                   <span className="min-w-0 flex-1 text-[16px] font-bold">{ss.title}</span>
                   <span className="text-[14px] text-muted">
-                    <span className="font-mono font-semibold text-text">{ss.walkers}</span> walkers ·{" "}
-                    <span className="font-mono font-semibold text-text">{ss.matches}</span> matches
+                    <span className="font-mono font-semibold text-text">{ss.walkers}</span> {ss.walkers === 1 ? "walker" : "walkers"} ·{" "}
+                    <span className="font-mono font-semibold text-text">{ss.matches}</span> {ss.matches === 1 ? "match" : "matches"}
                   </span>
                 </li>
               ))}

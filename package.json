@@ -1,0 +1,21 @@
+{
+  "name": "flock-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Data scripts for Flock: OSM stations, Luma import, synthetic demo users.",
+  "license": "MIT",
+  "scripts": {
+    "seed:stations": "tsx --env-file-if-exists=web/.env.local scripts/seed-stations.ts",
+    "seed:demo": "tsx --env-file-if-exists=web/.env.local scripts/seed-demo.ts",
+    "import:luma": "tsx --env-file-if-exists=web/.env.local scripts/import-luma.ts",
+    "typecheck:scripts": "tsc -p scripts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  }
+}

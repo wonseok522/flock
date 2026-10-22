@@ -11,7 +11,7 @@ import { FlockMap, type MapPoint } from "@/components/map";
 import { useMember } from "@/lib/use-member";
 import { supabase } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/errors";
-import { fromLocalInput, toLocalInput } from "@/lib/format";
+import { dayLabel, fromLocalInput, hhmm, toLocalInput } from "@/lib/format";
 import type { Community } from "@/lib/types";
 import { useRpc } from "../shared";
 
@@ -46,6 +46,12 @@ export function NewSessionScreen() {
   if (member.status === "loading") return <LoadingScreen />;
 
   const list = communities.state.status === "ready" ? communities.state.data : [];
+  let endsLabel: string | null = null;
+  try {
+    if (endsAt) endsLabel = `${dayLabel(fromLocalInput(endsAt))}, ${hhmm(fromLocalInput(endsAt))}`;
+  } catch {
+    endsLabel = null;
+  }
   const selected = community || (list.length === 1 ? list[0].id : "");
 
   function locateMe() {
@@ -185,6 +191,11 @@ export function NewSessionScreen() {
               onChange={(e) => setEndsAt(e.target.value)}
               className={`${inputClass} font-mono [color-scheme:dark]`}
             />
+            {endsLabel && (
+              <p className="text-[13px] text-muted">
+                Ends <span className="font-mono font-semibold text-amber">{endsLabel}</span> London time
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">

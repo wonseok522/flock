@@ -10,6 +10,8 @@ export type DashboardIncident = {
   resolution: string | null;
   first_names: string[];
   session_title: string | null;
+  /** e.g. "Solo walk to Russell Square · check-in due 20:55". Stations only. */
+  detail: string | null;
   created_at: string;
   alerted_at: string | null;
   notion_url: string | null;

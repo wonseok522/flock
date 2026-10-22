@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, BellRing, CircleCheck, House, MapPinOff, Pause, Phone, Radio, ShieldCheck, TrainFront } from "lucide-react";
+import { ArrowLeft, BellRing, CircleCheck, House, MapPinOff, Pause, Phone, Plus, Radio, ShieldCheck, TrainFront } from "lucide-react";
 import { Screen } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, EmptyState, ErrorCard, Eyebrow, LoadingScreen, Spinner } from "@/components/flock";
@@ -134,7 +134,7 @@ function LivePill({ state, onPause, onResume }: { state: ShareState; onPause: ()
   );
 }
 
-function CountdownRing({ remainingS, totalS, dueAt }: { remainingS: number; totalS: number; dueAt: string }) {
+function CountdownRing({ remainingS, totalS, dueAt, overdueS }: { remainingS: number; totalS: number; dueAt: string; overdueS: number }) {
   const size = 220;
   const stroke = 14;
   const r = (size - stroke) / 2;
@@ -159,15 +159,24 @@ function CountdownRing({ remainingS, totalS, dueAt }: { remainingS: number; tota
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center" aria-hidden="true">
-          <span className="font-mono text-[46px] leading-none font-semibold tabular-nums">{clock(remainingS)}</span>
-          <span className="mt-2 text-[13px] font-semibold text-muted">{remainingS > 0 ? "left" : "time's up"}</span>
+          {remainingS > 0 ? (
+            <>
+              <span className="font-mono text-[46px] leading-none font-semibold tabular-nums">{clock(remainingS)}</span>
+              <span className="mt-2 text-[13px] font-semibold text-muted">left</span>
+            </>
+          ) : (
+            <>
+              <span className="text-[13px] font-bold tracking-[0.06em] text-amber uppercase">Overdue by</span>
+              <span className="mt-1 font-mono text-[46px] leading-none font-semibold text-amber tabular-nums">{clock(overdueS)}</span>
+            </>
+          )}
         </div>
       </div>
       <p className="text-[16px] text-muted">
         check in by <span className="font-mono font-semibold text-amber">{hhmm(dueAt)}</span>
       </p>
       <span className="sr-only" role="timer">
-        Check in by {hhmm(dueAt)}. {Math.ceil(remainingS / 60)} minutes left.
+        Check in by {hhmm(dueAt)}. {remainingS > 0 ? `${Math.ceil(remainingS / 60)} minutes left.` : `Overdue by ${Math.floor(overdueS / 60)} minutes.`}
       </span>
     </div>
   );
@@ -185,6 +194,7 @@ export function SoloScreen() {
   const [now, setNow] = useState(() => Date.now());
   const [busy, setBusy] = useState(false);
   const [checkError, setCheckError] = useState<string | null>(null);
+  const [extending, setExtending] = useState(false);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -228,6 +238,20 @@ export function SoloScreen() {
       setCheckError(friendlyError(e));
     } finally {
       setBusy(false);
+    }
+  }, [tripId]);
+
+  const addTime = useCallback(async () => {
+    setExtending(true);
+    setCheckError(null);
+    try {
+      const { data, error } = await supabase().rpc("extend_solo", { p_trip: tripId, p_minutes: 10 });
+      if (error) throw error;
+      setTrip((t) => (t ? { ...t, eta_at: data as string } : t));
+    } catch (e) {
+      setCheckError(friendlyError(e));
+    } finally {
+      setExtending(false);
     }
   }, [tripId]);
 
@@ -277,7 +301,8 @@ export function SoloScreen() {
           </span>
           <div>
             <h1 className="text-[30px] leading-tight font-extrabold tracking-[-0.02em]">You&apos;re home. Nice one.</h1>
-            <p className="mt-2 text-[16px] text-muted">Checked in after walking to {trip.station_name}. Nobody gets alerted.</p>
+            <p className="mt-2 text-[16px] text-muted">Checked in after walking to {trip.station_name}.{" "}
+              {trip.alerted_at ? "The incident is closed, so your group and safety team can see you're safe." : "Nobody gets alerted."}</p>
           </div>
           <Button asChild className="mt-4">
             <Link href="/">Back to Tonight</Link>
@@ -324,7 +349,14 @@ export function SoloScreen() {
         {trip.session_title && <p className="text-[15px] text-muted">From {trip.session_title}</p>}
       </header>
 
-      <CountdownRing remainingS={remainingS} totalS={totalS} dueAt={trip.eta_at} />
+      <CountdownRing remainingS={remainingS} totalS={totalS} dueAt={trip.eta_at} overdueS={Math.max(0, (now - dueMs) / 1000)} />
+      {trip.status === "active" && !overdue && (
+        <div className="-mt-2 flex justify-center">
+          <Button type="button" variant="chip" size="sm" onClick={addTime} disabled={extending}>
+            {extending ? <Spinner className="size-4" /> : <Plus className="size-4" aria-hidden="true" />} Add 10 min
+          </Button>
+        </div>
+      )}
 
       {trip.status === "help" ? (
         <section role="alert" className="rounded-[22px] border border-danger bg-danger-surface p-5">
@@ -344,7 +376,7 @@ export function SoloScreen() {
                 Session group:{" "}
                 {trip.alerted_at ? (
                   <span className="font-semibold text-text">
-                    alerted at <span className="font-mono">{hhmm(trip.alerted_at)}</span>
+                    flagged at <span className="font-mono">{hhmm(trip.alerted_at)}</span>
                   </span>
                 ) : (
                   "alerting now"
@@ -387,25 +419,27 @@ export function SoloScreen() {
         </Button>
       </div>
 
-      <Card className="flex flex-col gap-2">
-        <Eyebrow>If you don&apos;t check in</Eyebrow>
-        <p className="flex items-start gap-2 text-[15px]">
-          <BellRing className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden="true" />
-          {trip.session_id ? (
+      {!overdue && trip.status !== "help" && (
+        <Card className="flex flex-col gap-2">
+          <Eyebrow>If you don&apos;t check in</Eyebrow>
+          <p className="flex items-start gap-2 text-[15px]">
+            <BellRing className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden="true" />
+            {trip.session_id ? (
+              <span>
+                Your session group&apos;s Discord thread at <span className="font-mono">{hhmm(trip.eta_at)}</span>
+              </span>
+            ) : (
+              <span>No session group for this walk</span>
+            )}
+          </p>
+          <p className="flex items-start gap-2 text-[15px]">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden="true" />
             <span>
-              Your session group&apos;s Discord thread at <span className="font-mono">{hhmm(trip.eta_at)}</span>
+              Your society safety team at <span className="font-mono">{hhmm(new Date(dueMs + ESCALATE_AFTER_MS))}</span>
             </span>
-          ) : (
-            <span>No session group for this walk</span>
-          )}
-        </p>
-        <p className="flex items-start gap-2 text-[15px]">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden="true" />
-          <span>
-            Your society safety team at <span className="font-mono">{hhmm(new Date(dueMs + ESCALATE_AFTER_MS))}</span>
-          </span>
-        </p>
-      </Card>
+          </p>
+        </Card>
+      )}
     </Screen>
   );
 }

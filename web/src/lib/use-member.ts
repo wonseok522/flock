@@ -43,6 +43,12 @@ export function useMember(): State & { reload: () => void } {
           router.replace("/onboard");
           return;
         }
+        // Shared blocklist: a confirmed bad actor loses access everywhere (best effort check).
+        const { data: blocked } = await sb.rpc("am_i_blocked");
+        if (blocked === true) {
+          if (!cancelled) setState({ status: "error", message: friendlyError("blocked") });
+          return;
+        }
         if (!cancelled) setState({ status: "ready", member: data as Member });
       } catch (e) {
         if (!cancelled) setState({ status: "error", message: friendlyError(e) });

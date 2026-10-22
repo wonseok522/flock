@@ -24,12 +24,19 @@ function icon(kind: MapMarker["kind"]): L.DivIcon {
   return L.divIcon({ className: "", html: `<div style="${styles[kind]}"></div>`, iconSize: [18, 18], iconAnchor: [9, 9] });
 }
 
-function FitBounds({ points }: { points: MapPoint[] }) {
+type FitPadding = { topLeft: [number, number]; bottomRight: [number, number] };
+const DEFAULT_PAD: FitPadding = { topLeft: [36, 36], bottomRight: [36, 36] };
+
+function FitBounds({ points, pad }: { points: MapPoint[]; pad: FitPadding }) {
   const map = useMap();
   const key = points.map((p) => `${p.lat.toFixed(4)},${p.lng.toFixed(4)}`).join("|");
   useEffect(() => {
     if (points.length === 1) map.setView([points[0].lat, points[0].lng], 15);
-    else if (points.length > 1) map.fitBounds(L.latLngBounds(points.map((p) => [p.lat, p.lng])), { padding: [36, 36], maxZoom: 16 });
+    else if (points.length > 1) map.fitBounds(L.latLngBounds(points.map((p) => [p.lat, p.lng])), {
+        paddingTopLeft: pad.topLeft,
+        paddingBottomRight: pad.bottomRight,
+        maxZoom: 16,
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- refit only when the points change
   }, [key, map]);
   return null;
@@ -46,6 +53,7 @@ export default function FlockMap({
   height = 260,
   onPick,
   fit,
+  fitPadding = DEFAULT_PAD,
   className,
 }: {
   markers: MapMarker[];
@@ -54,6 +62,8 @@ export default function FlockMap({
   height?: number | string;
   onPick?: (p: MapPoint) => void;
   fit?: MapPoint[];
+  /** Extra room (px) when fitting, e.g. for overlays on top of the map. */
+  fitPadding?: FitPadding;
   className?: string;
 }) {
   const center = markers[0] ?? route?.from ?? { lat: 51.5072, lng: -0.1276 };
@@ -85,7 +95,7 @@ export default function FlockMap({
           </Marker>
         ))}
         {onPick && <Picker onPick={onPick} />}
-        <FitBounds points={fitPoints} />
+        <FitBounds points={fitPoints} pad={fitPadding} />
       </MapContainer>
     </div>
   );

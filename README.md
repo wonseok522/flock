@@ -41,7 +41,7 @@ Flock keeps students safe at three moments:
 
 | Partner | How Flock uses it |
 |---|---|
-| **Supabase** | Auth (university email magic link), Postgres + **PostGIS** for matching, **Realtime** for live matches, **RLS** on every table, shared blocklist |
+| **Supabase** | Auth (university email sign-in code), Postgres + **PostGIS** for matching, **Realtime** for live matches, **RLS** on every table, shared blocklist |
 | **Cognee** | Community trust graph: who studied together, who walked home safely together. Powers the "why you can trust them" reason on every match. |
 | **Notion** | Society **Safety HQ**: Safety Rules page, Incidents database, Tonight dashboard |
 | **Zero** | Growth: new members get a follow-up sequence; new societies enter an outreach pipeline |
@@ -63,42 +63,68 @@ All public, all from the hackathon's Data starter kit:
 
 ```mermaid
 flowchart LR
-  U[Student phone] --> W[Next.js web app]
+  U[Student phone] --> W[Next.js web app<br/>on Vercel]
   W --> S[(Supabase<br/>Auth · PostGIS · Realtime · RLS)]
-  W --> C[Cognee service<br/>trust graph]
-  W --> N[Notion<br/>Safety HQ]
-  W --> Z[Zero<br/>follow-ups + outreach]
-  B[Discord bot] --> S
-  B --> N
+  W --> N1[Notion<br/>Safety Rules: uni contacts]
+  W --> Z[Zero<br/>member.joined webhook]
+  W --> V[GitHub · Devpost · StopForumSpam<br/>/api/verify]
+  S <-->|Realtime + service role| K[Flock worker<br/>bot/ on the demo laptop]
+  K --> C[Cognee ai-service<br/>localhost:8001]
+  K --> N[Notion<br/>Incidents · Tonight]
+  K --> D[Discord<br/>threads · reminders · alerts]
   G[Grok Bot] --> N
   G --> Z
-  G --> B
-  L[Luma · OSM · GitHub · Devpost · StopForumSpam] --> W
+  L[Luma · OSM Overpass] --> X[scripts/] --> S
 ```
+
+**Why there is a worker.** The web app runs on Vercel, and Vercel can't reach `localhost`. Cognee runs on the demo laptop at `localhost:8001`, so the web app never calls it. Instead the **Flock worker** (`bot/`) runs on the same laptop with the Supabase service role. It listens to Supabase Realtime, calls Cognee, Notion and Discord, and writes results back to Supabase (for example `matches.reason`), which then reach the phones through Realtime. Every worker job is idempotent, so restarting it never double-posts. Grok Bot does the judgment: it reviews incidents in Notion against the Safety Rules, and a human confirms on `/dashboard`.
+
+## Partner integrations: where to look in the code
+
+| Partner | What it does in Flock | Code |
+|---|---|---|
+| **Supabase** | Email-code sign-in, uni-domain check, PostGIS matching (`find_buddies`, `request_walk`, `choose_buddy`), check-ins, blocklist, RLS on every table | [`supabase/schema.sql`](supabase/schema.sql), [`web/src/lib/supabase/`](web/src/lib/supabase), [`web/src/proxy.ts`](web/src/proxy.ts), [`web/src/app/login/login-screen.tsx`](web/src/app/login/login-screen.tsx) |
+| **Supabase Realtime** | Live match on the second phone, live walk map and location pill, worker triggers | [`web/src/app/sessions/[id]/walk/walk-request-screen.tsx`](web/src/app/sessions/%5Bid%5D/walk/walk-request-screen.tsx), [`web/src/app/walk/[matchId]/walk-screen.tsx`](web/src/app/walk/%5BmatchId%5D/walk-screen.tsx), [`bot/index.js`](bot/index.js) |
+| **Cognee** | Remembers session joins and safe walks; writes the "why you can trust them" line on each match | [`ai-service/main.py`](ai-service/main.py), [`bot/jobs/cognee.js`](bot/jobs/cognee.js), [`bot/lib/cognee.js`](bot/lib/cognee.js), `CogneeReason` in [`walk-screen.tsx`](web/src/app/walk/%5BmatchId%5D/walk-screen.tsx) |
+| **Notion** | Incidents database, Tonight dashboard, Safety Rules (university contacts on `/safety`) | [`bot/jobs/incidents.js`](bot/jobs/incidents.js), [`bot/jobs/dashboard.js`](bot/jobs/dashboard.js), [`bot/lib/notion.js`](bot/lib/notion.js), [`bot/notion-schema.md`](bot/notion-schema.md), [`web/src/app/api/contacts/route.ts`](web/src/app/api/contacts/route.ts) |
+| **Zero** | New verified member → `member.joined` webhook → follow-up sequence | [`web/src/app/api/zero/route.ts`](web/src/app/api/zero/route.ts), called from [`web/src/app/onboard/page.tsx`](web/src/app/onboard/page.tsx) |
+| **Grok Bot** | Spec + community context, Notion/Zero setup, bot copy, incident recommendations (synced to `/dashboard`, a human confirms) | [`docs/GROK_BOT_CONTEXT.md`](docs/GROK_BOT_CONTEXT.md), [`bot/messages.js`](bot/messages.js), `grok-sync` in [`bot/jobs/incidents.js`](bot/jobs/incidents.js), [`web/src/app/dashboard/dashboard-screen.tsx`](web/src/app/dashboard/dashboard-screen.tsx), [`web/src/app/api/dashboard/decide/route.ts`](web/src/app/api/dashboard/decide/route.ts) |
+| **Cursor** | Writes the features, one prompt per step | [`.cursor/rules/flock.mdc`](.cursor/rules/flock.mdc), [`docs/CURSOR_PROMPTS.md`](docs/CURSOR_PROMPTS.md), [`BUILD_LOG.md`](BUILD_LOG.md) |
+| Discord (chat channel) | Session threads, 15-min reminders, missed check-in / SOS alerts, `/flock` | [`bot/jobs/sessions.js`](bot/jobs/sessions.js), [`bot/jobs/checkins.js`](bot/jobs/checkins.js), [`bot/lib/discord.js`](bot/lib/discord.js) |
+| Trust signals | GitHub, Devpost, StopForumSpam | [`web/src/app/api/verify/route.ts`](web/src/app/api/verify/route.ts) |
 
 ## Tech stack
 
-Next.js (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Leaflet · Supabase (Postgres, PostGIS, Auth, Realtime, RLS) · Cognee (Python, FastAPI) · discord.js · Notion API · Zero · Grok Bot · Cursor
+Next.js 16 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Leaflet · Supabase (Postgres, PostGIS, Auth, Realtime, RLS) · Cognee (Python 3.12, FastAPI, Google Gemini) · discord.js · Notion API · Zero · Grok Bot · Cursor
 
 ## Run it locally
 
+Full partner setup (SMTP, Notion, Discord, Zero, Vercel), each with a "how to verify" step: **[`docs/SETUP.md`](docs/SETUP.md)**. Every env var: [`.env.example`](.env.example).
+
 ```bash
-git clone <repo-url> && cd flock
-cp .env.example web/.env.local   # fill in keys
+git clone https://github.com/wonseok522/flock.git && cd flock
+# Create web/.env.local, bot/.env and ai-service/.env from the sections of .env.example
 
-# 1. Database: run supabase/schema.sql in the Supabase SQL editor, then seed
-npx tsx scripts/seed-stations.ts
-npx tsx scripts/import-luma.ts
+# 1. Database (fresh project only; the team project already has it): run supabase/schema.sql,
+#    then supabase/seed.sql, in the Supabase SQL editor. Then, from the repo root:
+npm install                      # root: data scripts
+npm run seed:stations            # OSM Overpass → stations
+npm run import:luma              # The Hack Collective Luma → study_sessions
+npm run seed:demo                # 8 synthetic @demo.flock.test personas (-- --reset to re-seed)
 
-# 2. Cognee service
-cd ai-service && pip install -r requirements.txt && uvicorn main:app --port 8001
-
-# 3. Web app
+# 2. Web app, own terminal → http://localhost:3000
 cd web && npm install && npm run dev
 
-# 4. Discord bot
-cd bot && npm install && node index.js
+# 3. Cognee service, own terminal (Python 3.12 via uv) → http://localhost:8001/health
+cd ai-service && uv venv --python 3.12 .venv \
+  && uv pip install --python .venv/bin/python -r requirements.txt \
+  && .venv/bin/uvicorn main:app --port 8001
+
+# 4. Flock worker, own terminal (Node 20.6+): Cognee, Notion, Discord
+cd bot && npm install && npm start
 ```
+
+The scripts read `web/.env.local`. Add `-- --sql <file>` to any seed script to write idempotent SQL instead of writing to Supabase.
 
 ## Safety and privacy by design
 

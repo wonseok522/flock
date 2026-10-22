@@ -64,7 +64,7 @@ export function VerifiedBadge({ label }: { label: string }) {
 }
 
 export function TimeChip({ children }: { children: ReactNode }) {
-  return <span className="inline-flex items-center rounded-full bg-amber-tint px-2.5 py-1 font-mono text-[13px] font-semibold text-amber">{children}</span>;
+  return <span className="inline-flex shrink-0 items-center rounded-full bg-amber-tint px-2.5 py-1 font-mono whitespace-nowrap text-[13px] font-semibold text-amber">{children}</span>;
 }
 
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {

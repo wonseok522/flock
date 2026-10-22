@@ -17,6 +17,13 @@ Tags: `[grok-bot]` · `[cursor]` · `[claude-code]` · `[human]`
 | 20:40 | [claude-code] | bot/: Flock worker: Realtime + polling jobs for Cognee memory/trust, Discord threads/reminders/alerts, Notion incidents + Grok recommendation sync, Tonight dashboard | Supabase, Cognee, Notion |
 | 20:45 | [claude-code] | web/: Next.js 16 app: code sign-in, onboarding, Tonight, Sessions, Groups, walk matching (pick from 3, Realtime), walking-home live map + location sharing, SOS, solo timer, Safety, Safety HQ dashboard, /api/verify (GitHub, Devpost, StopForumSpam), /api/zero, /api/contacts (Notion) | Supabase, Cognee, Notion, Zero |
 | 20:50 | [claude-code] | Browser-tested sign-in, onboarding, Tonight, Groups, create session against live Supabase; switched maps to darkened OSM tiles (CARTO now needs a key) | Supabase |
+| 21:05 | [claude-code] | E2E-tested the walk flow with 2–3 synthetic users in headless Chrome: request, pick from 3, Realtime match on the other phone (even with polling blocked), walking-home map, check-ins, vouch, report, missed check-in incident, SOS location; fixed 5 visual issues | Supabase |
+| 21:05 | [claude-code] | Docs: README run steps + architecture + partner file map, docs/SETUP.md (SMTP, Gemini, Notion, Discord, Zero, Vercel), DEMO.md rewritten for the built app, .env.example complete | — |
+| 21:10 | [claude-code] | Cognee switched to free Google Gemini (gemini-3.1-flash-lite + gemini-embedding-001) with free-tier rate limiting | Cognee |
+| 21:10 | [claude-code] | E2E-tested solo timer (overdue → worker incident), Safety tab, Safety HQ (confirm & block → blocklist, mark safe), Tonight/Sessions/Groups with synthetic users; added "Add 10 min" (`extend_solo` RPC), overdue count-up, incident station/due-time line, blocked users lose access to verified spaces (`am_i_blocked`), layout fixes | Supabase |
+| 21:15 | [claude-code] | E2E-tested solo timer (overdue → incident), Safety tab, Safety HQ (stats, Confirm & block → blocklist, 403 for non-leads); fixed 15 UI/logic bugs incl. blocked users still seeing sessions (now lose membership), Add 10 min (`extend_solo`), dashboard states | Supabase |
+| 21:15 | [claude-code] | Seeded 598 Greater London stations (OSM Overpass), tonight's hackathon event (Luma JSON), 8 synthetic demo users; scripts/ + root package.json | Supabase |
+| 21:20 | [claude-code] | Hid blocked members from session rosters; Mark safe closes the walk/timer; production build passes (23 routes) | Supabase |
 | | [grok-bot] | | |
 | | [cursor] | | |
 

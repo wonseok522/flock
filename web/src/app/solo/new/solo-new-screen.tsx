@@ -196,8 +196,8 @@ export function SoloNewScreen() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-[16px] font-bold">{picked.name}</p>
               {pickedDistance != null && (
-                <p className="font-mono text-[13px] text-muted">
-                  {metres(pickedDistance)} · about {walkMin} min on foot
+                <p className="text-[14px] text-muted">
+                  <span className="font-mono">{metres(pickedDistance)}</span> · about <span className="font-mono">{walkMin}</span> min on foot
                 </p>
               )}
             </div>
@@ -273,7 +273,12 @@ export function SoloNewScreen() {
           ))}
         </div>
         {walkMin != null && walkMin > minutes && (
-          <p className="text-[14px] text-amber">That station is about {walkMin} min on foot. Pick a longer timer so you aren&apos;t flagged by mistake.</p>
+          <p className="text-[14px] text-amber">
+            That station is about {walkMin} min on foot.{" "}
+            {minutes < DURATIONS[DURATIONS.length - 1]
+              ? "Pick a longer timer so you aren't flagged by mistake."
+              : "You can tap “Add 10 min” on the timer while you walk."}
+          </p>
         )}
       </section>
 

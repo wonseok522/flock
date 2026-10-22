@@ -292,7 +292,9 @@ function PickStep({ session, onRequested }: { session: SessionOverview; onReques
           <div className="min-w-0 flex-1">
             <p className="truncate text-[18px] font-extrabold">{picked.name}</p>
             {picked.distance_m != null && hasVenue && (
-              <p className="font-mono text-[13px] text-muted">{metres(picked.distance_m)} from the session</p>
+              <p className="text-[13px] text-muted">
+                <span className="font-mono">{metres(picked.distance_m)}</span> from the session
+              </p>
             )}
           </div>
           <Button variant="chip" size="sm" onClick={() => setPicked(null)}>
@@ -616,7 +618,8 @@ function WaitStep({
         <>
           {foundAfter != null && (
             <p className="-mt-2 text-[14px] text-muted">
-              Found in <span className="font-mono font-semibold text-amber">{foundAfter} s</span>, {firstName}. Pick who you&apos;d like to walk with.
+              Found in <span className="font-mono font-semibold text-amber">{foundAfter}</span>{" "}
+              {foundAfter === 1 ? "second" : "seconds"}, {firstName}. Pick who you&apos;d like to walk with.
             </p>
           )}
           <Card highlight className="flex flex-col gap-4">

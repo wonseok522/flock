@@ -45,7 +45,7 @@ log.setLevel(logging.INFO)
 log.propagate = False
 
 DATASET = "flock"
-TRUST_TIMEOUT_S = 8.0
+TRUST_TIMEOUT_S = float(os.environ.get("TRUST_TIMEOUT_S", "25"))  # free-tier Gemini can be slow; the card updates live
 MAX_REASON_CHARS = 280
 
 

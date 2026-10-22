@@ -4,7 +4,7 @@
 //                                                           -> {reason, source}
 import { config } from './config.js';
 
-const TIMEOUT_MS = 10_000;
+const TIMEOUT_MS = 30_000; // > ai-service TRUST_TIMEOUT_S; the match card shows instantly and fills the reason in live
 
 async function post(path, body) {
   const res = await fetch(`${config.cogneeUrl}${path}`, {

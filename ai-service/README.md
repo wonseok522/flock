@@ -29,8 +29,11 @@ The first start takes a few seconds while Cognee loads.
 
 | Var | Required | What it's for |
 |---|---|---|
-| `LLM_API_KEY` | for real reasons | OpenAI key by default. Cognee uses it to build the graph (`cognify`), embed the text and answer `/trust` searches. |
-| `LLM_PROVIDER`, `LLM_MODEL` | no | Change the LLM Cognee uses (defaults: `openai`, Cognee's default model). |
+| `LLM_API_KEY` | for real reasons | A **Google Gemini** key (free: https://aistudio.google.com/apikey). Cognee uses it to build the graph (`cognify`), embed the text and answer `/trust` searches. `EMBEDDING_API_KEY=${LLM_API_KEY}` reuses it for embeddings. |
+| `LLM_PROVIDER`, `LLM_MODEL` | yes | `gemini` and `gemini/gemini-3.1-flash-lite` (the free tier's most generous limits; older models such as `gemini-2.5-flash` return 404 for new keys). |
+| `EMBEDDING_PROVIDER`, `EMBEDDING_MODEL`, `EMBEDDING_DIMENSIONS` | yes | `gemini`, `gemini/gemini-embedding-001`, `768`. |
+| `LLM_RATE_LIMIT_*`, `EMBEDDING_RATE_LIMIT_*` | recommended | Keep Cognee under the free tier (12 LLM requests/min). Without them, cognify bursts get `RateLimitError`. |
+| `TRUST_TIMEOUT_S` | no | `/trust` time limit, default 25 s (the match card shows at once and fills the reason in live). |
 
 Put keys **in `ai-service/.env`**. Cognee loads this file at import time with `override=True`, so it wins over variables exported in your shell. Cognee's local databases go in `ai-service/.cognee_system/`, `ai-service/.data_storage/` and `ai-service/.cognee_cache/`. All three are gitignored. To wipe the graph, stop the server and delete them.
 

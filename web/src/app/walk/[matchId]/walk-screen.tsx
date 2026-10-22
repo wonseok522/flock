@@ -18,9 +18,13 @@ import type { MyMatch } from "@/lib/types";
 import { TrustList, trustLines, uniName } from "@/app/sessions/[id]/walk/walk-request-screen";
 
 const REFRESH_MS = 10_000;
-const REASON_TIMEOUT_MS = 10_000;
+// Cognee runs on free-tier Gemini: ai-service times out at 25 s, the worker at 30 s.
+const REASON_TIMEOUT_MS = 30_000;
 const BROADCAST_EVERY_MS = 5_000;
 const STOP_NEAR_STATION_M = 200;
+
+// Room for the back button + live pill on top and the sheet's 28px overlap below.
+const MAP_PAD = { topLeft: [40, 96] as [number, number], bottomRight: [40, 56] as [number, number] };
 
 type Share = "asking" | "sharing" | "paused" | "denied" | "unsupported" | "arrived" | "off";
 type LivePoint = MapPoint & { first_name: string; at: string };
@@ -337,7 +341,14 @@ export function WalkScreen() {
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-1 flex-col">
       {/* Map: top ~55% */}
       <div className="relative isolate h-[55dvh] min-h-[300px] w-full">
-        <FlockMap markers={markers} fit={fit} route={route} height="100%" />
+        <FlockMap
+          markers={markers}
+          fit={fit}
+          route={route}
+          height="100%"
+          fitPadding={MAP_PAD}
+          className="[&_.leaflet-bottom]:bottom-7!"
+        />
         <div className="pointer-events-none absolute inset-x-0 top-0 z-[1001] flex items-start justify-between gap-2 px-4 pt-safe">
           <Link
             href="/"

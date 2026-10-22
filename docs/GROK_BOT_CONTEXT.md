@@ -50,17 +50,35 @@ steps; a human does them and logs "[human] (spec from grok-bot)".
 
 G1. Restate this plan as a task board with owners A (web), B (data +
     worker), C (partners + demo).
-G2. Notion: create "Flock Safety HQ" with
-    (a) Safety Rules page: meet at the session location, stations only, never
-        share home addresses, check in within 45 min, report anything that
-        feels wrong, emergency = 999, then university security; plus a
-        "University contacts" section (security + welfare per London uni);
-    (b) Incidents database: Title, Kind (missed_checkin / help / report),
-        Members (first names), Session, Status (open / resolved),
-        Grok recommendation, Created;
-    (c) Tonight dashboard database: Session, Walkers, Matches, Avg seconds to
-        match, Missed check-ins.
-    Share all three with the Flock Notion integration and send me the IDs.
+G2. Notion: create a page "Flock Safety HQ" with three children. The Flock
+    worker reads and writes these, so property NAMES (case-sensitive) and
+    TYPES must match bot/notion-schema.md EXACTLY:
+    (a) Safety Rules page (normal page): meet at the session location,
+        stations only, never share home addresses, check in within 45 min,
+        report anything that feels wrong, emergency = 999, then university
+        security. Then a HEADING whose text contains "University contacts",
+        followed by one bullet per contact in the form
+        "UCL Security — <number from the university's own website>".
+        Flock's /safety screen reads the bullets under that heading. Never
+        invent a number: if you can't find one, leave it out and tell me.
+    (b) Incidents database ("Incidents"):
+          Title                Title   (rename the default "Name" to "Title")
+          Kind                 Select  options: missed_checkin, help, report
+          Members              Text    (first names only, comma-separated)
+          Session              Text
+          Status               Select  options: open, resolved (lowercase)
+          Created              Date
+          Grok recommendation  Text    (you write this in G9)
+    (c) Tonight dashboard database ("Tonight"):
+          Session              Title   (rename "Name" to "Session")
+          Walkers              Number
+          Matches              Number
+          Avg seconds to match Number
+          Missed check-ins     Number
+    The worker writes every property except "Grok recommendation". Share the
+    "Flock Safety HQ" page with the Flock Notion integration (••• →
+    Connections) so all three children inherit access, and send me the
+    three IDs (the 32-character part of each URL).
 G3. Find The Hack Collective's Luma calendar ID (cal-...) and read tonight's
     event JSON (evt-lN7hh5bk7fiSQvF): venue lat/lng, end time, hosts.
 G4. Write 8 SYNTHETIC demo personas (first name, university, destination
@@ -71,9 +89,13 @@ G5. Zero: (a) follow-up for new Flock members and Luma guests of imported
     events: "Got home safe? Join your study session on Flock"; (b) pipeline
     "London student societies" from Luma hosts of late events, each with a
     drafted invite. Send me the webhook URL.
-G6. Write the Discord bot copy (first names only): session thread intro,
-    15-min "Heading out soon? Find someone going your way: <link>",
-    missed-check-in alert, SOS alert ("call 999" first).
+G6. Discord bot copy. The default strings already live in bot/messages.js
+    (session thread intro, 15-min "Heading out soon? Find someone going your
+    way: <link>", missed-check-in alert, solo overdue alert, SOS alert with
+    "call 999" first, report alert, escalation, Notion incident note). I
+    will paste that file: rewrite any string you can improve, keeping the
+    same function names and parameters. Rules: first names only, never
+    emails, ids or addresses; 999 first for SOS; short, warm, no emoji.
 G7. Review every Cursor diff I paste against the SAFETY RULES above. List
     violations with file + line.
 G8. At each checkpoint I paste the status: compare it with the spec, list

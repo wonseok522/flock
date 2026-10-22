@@ -14,6 +14,7 @@ const MESSAGES: Record<string, string> = {
   walk_not_finished: "You can vouch once you're both home.",
   not_your_walk: "This walk isn't yours.",
   not_your_trip: "This timer isn't yours.",
+  trip_not_active: "This timer has already run out or finished, so it can't be extended.",
 };
 
 export function friendlyError(e: unknown): string {

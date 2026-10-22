@@ -167,14 +167,16 @@ export function EventRow({
           <span className="block text-[12px] font-semibold text-muted">ends</span>
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[16px] font-bold">{session.title}</span>
-          <span className="block truncate text-[14px] text-muted">
+          <span className="line-clamp-2 text-[16px] leading-snug font-bold">{session.title}</span>
+          <span className="mt-0.5 line-clamp-2 text-[14px] leading-snug text-muted">
             {showDay && `${dayLabel(session.ends_at)} · `}
             {session.location_name || session.community_name}
-            {session.member_count > 0 && (
+            {Number(session.member_count) > 0 && (
               <>
                 {" · "}
-                <span className="font-mono">{session.member_count}</span> going
+                <span className="whitespace-nowrap">
+                  <span className="font-mono">{session.member_count}</span> going
+                </span>
               </>
             )}
           </span>
