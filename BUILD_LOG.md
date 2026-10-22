@@ -24,6 +24,7 @@ Tags: `[grok-bot]` · `[cursor]` · `[claude-code]` · `[human]`
 | 21:15 | [claude-code] | E2E-tested solo timer (overdue → incident), Safety tab, Safety HQ (stats, Confirm & block → blocklist, 403 for non-leads); fixed 15 UI/logic bugs incl. blocked users still seeing sessions (now lose membership), Add 10 min (`extend_solo`), dashboard states | Supabase |
 | 21:15 | [claude-code] | Seeded 598 Greater London stations (OSM Overpass), tonight's hackathon event (Luma JSON), 8 synthetic demo users; scripts/ + root package.json | Supabase |
 | 21:20 | [claude-code] | Hid blocked members from session rosters; Mark safe closes the walk/timer; production build passes (23 routes) | Supabase |
+| 21:12 | [claude-code] | Sign-in: "I already have a code" path (works before custom SMTP is set up) | Supabase |
 | | [grok-bot] | | |
 | | [cursor] | | |
 

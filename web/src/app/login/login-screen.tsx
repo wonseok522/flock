@@ -95,6 +95,23 @@ export function LoginScreen() {
           <Button type="submit" disabled={busy}>
             {busy ? <Spinner /> : <Mail aria-hidden="true" />} Send code
           </Button>
+          <Button
+            type="button"
+            variant="text"
+            size="md"
+            onClick={() => {
+              const clean = email.trim().toLowerCase();
+              if (!looksLikeUniversityEmail(clean)) {
+                setError("Enter your university email first, then your code.");
+                return;
+              }
+              setError(null);
+              setEmail(clean);
+              setStep("code");
+            }}
+          >
+            I already have a code
+          </Button>
           <PrivacyNote>
             <ShieldCheck className="mr-1 inline size-4 text-safe" aria-hidden="true" />
             Only verified students get in. Matches only ever see your first name, and we use stations, never home addresses.
