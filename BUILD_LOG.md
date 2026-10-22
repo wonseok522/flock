@@ -8,7 +8,8 @@ Tags: `[grok-bot]` · `[cursor]` · `[claude-code]` · `[human]`
 | Time (London) | Tag | What was done | Partners used |
 |---|---|---|---|
 | 19:05 | [claude-code] | Wrote CLAUDE.md, README.md, schema.sql, docs (Grok Bot context, Cursor prompts, demo script) | — |
-| 03:20 | [claude-code] | Initialised git, created public GitHub repo (MIT) for the team | — |
+| 19:20 | [claude-code] | Initialised git, created public GitHub repo (MIT) for the team | — |
+| 19:31 | [claude-code] | Audited repo + docs; wrote docs/BUILD_PLAN.md; rewrote CURSOR_PROMPTS.md (Steps 0–12) and Grok Bot jobs G1–G10; fixed demo route | — |
 | | [grok-bot] | | |
 | | [cursor] | | |
 

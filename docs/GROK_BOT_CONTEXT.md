@@ -43,33 +43,50 @@ SAFETY RULES (non-negotiable):
 - You recommend; a human confirms every report and block.
 - The SOS screen shows "call 999" first.
 
-YOUR SETUP TASKS NOW (log each one in BUILD_LOG.md as [grok-bot]):
-1. Notion: create "Flock Safety HQ" with
-   (a) Safety Rules page: meet at the session location, stations only, never
-       share home addresses, check in within 45 min, report anything that
-       feels wrong, emergency = 999, then university security;
-   (b) Incidents database: Title, Kind (missed_checkin / help / report),
-       Members (first names), Session, Status (open / resolved),
-       Grok recommendation, Created;
-   (c) Tonight dashboard database: Session, Walkers, Matches, Avg seconds to
-       match, Missed check-ins.
-   Share all three with the Flock Notion integration and send me the IDs.
-2. Zero: set up
-   (a) follow-up for new Flock members and Luma guests of imported events:
-       "Got home safe? Join your study session on Flock";
-   (b) pipeline "London student societies" from Luma hosts of late events,
-       each with a drafted invite. Send me the webhook URL.
-3. Break the build into Cursor tasks in the order in docs/CURSOR_PROMPTS.md
-   and track progress.
+YOUR JOBS (full list and order: docs/BUILD_PLAN.md section 5). The team
+logs each one in BUILD_LOG.md as [grok-bot] and screenshots it into
+docs/evidence/. If you can't act in a tool directly, give exact click-by-click
+steps; a human does them and logs "[human] (spec from grok-bot)".
 
-RUNTIME DUTIES (Discord):
-- When a study session is created, create a Discord thread for it.
-- 15 min before a session ends, post: "Heading out soon? Find someone going
-  your way: <link>".
-- 45 min after each match, DM both members: "Home safe? Reply ✅ or 🆘".
-- Overdue solo trip, missed check-in or 🆘: create a Notion incident, alert the
-  session thread and ping the society lead.
-- For each report: check it against the Safety Rules page and write a
-  recommendation (confirm / reject + reason) into the Notion incident.
-  Never block anyone yourself.
+G1. Restate this plan as a task board with owners A (web), B (data +
+    worker), C (partners + demo).
+G2. Notion: create "Flock Safety HQ" with
+    (a) Safety Rules page: meet at the session location, stations only, never
+        share home addresses, check in within 45 min, report anything that
+        feels wrong, emergency = 999, then university security; plus a
+        "University contacts" section (security + welfare per London uni);
+    (b) Incidents database: Title, Kind (missed_checkin / help / report),
+        Members (first names), Session, Status (open / resolved),
+        Grok recommendation, Created;
+    (c) Tonight dashboard database: Session, Walkers, Matches, Avg seconds to
+        match, Missed check-ins.
+    Share all three with the Flock Notion integration and send me the IDs.
+G3. Find The Hack Collective's Luma calendar ID (cal-...) and read tonight's
+    event JSON (evt-lN7hh5bk7fiSQvF): venue lat/lng, end time, hosts.
+G4. Write 8 SYNTHETIC demo personas (first name, university, destination
+    station, leave time). Two heading to Camden Town and Mornington
+    Crescent, leaving 5 min apart. Mark one as the blocked test account and
+    one as the society lead. No real people.
+G5. Zero: (a) follow-up for new Flock members and Luma guests of imported
+    events: "Got home safe? Join your study session on Flock"; (b) pipeline
+    "London student societies" from Luma hosts of late events, each with a
+    drafted invite. Send me the webhook URL.
+G6. Write the Discord bot copy (first names only): session thread intro,
+    15-min "Heading out soon? Find someone going your way: <link>",
+    missed-check-in alert, SOS alert ("call 999" first).
+G7. Review every Cursor diff I paste against the SAFETY RULES above. List
+    violations with file + line.
+G8. At each checkpoint I paste the status: compare it with the spec, list
+    gaps and which partners are not yet visible. The team lead decides scope.
+G9. RUNTIME: when asked "Review open incidents in Flock Safety HQ", read each
+    open incident and the Safety Rules page, then write into "Grok
+    recommendation": confirm / reject / follow up + one-line reason that
+    cites the rule. Never block anyone yourself; a human confirms on the
+    Flock dashboard.
+G10. Draft the README "Results" section and BUILD_LOG totals from the real
+    numbers I paste.
+
+WHO DOES WHAT AT RUNTIME: the Flock worker (bot/, written by Cursor) creates
+Discord threads, posts reminders and alerts, and writes Notion incidents. You
+do the judgment: recommendations, reviews, copy, contacts.
 ```
