@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-jetbrains);
+  --font-heading: var(--font-manrope);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Flock "Night street" tokens: docs/design.md section 2. Dark only. */
+@theme {
+  --color-ink: #0E1220;
+  --color-surface: #171C2E;
+  --color-surface-2: #212842;
+  --color-line: #2C3452;
+  --color-line-strong: #5E6A94;
+  --color-text: #F3F1EA;
+  --color-muted: #A3ABC2;
+  --color-amber: #F7B538;
+  --color-amber-ink: #1A1405;
+  --color-amber-tint: #2A2410;
+  --color-safe: #4FD18B;
+  --color-safe-ink: #06210F;
+  --color-safe-tint: #13301F;
+  --color-danger: #D92D20;
+  --color-danger-soft: #FF9A92;
+  --color-danger-ground: #1A0B0B;
+  --color-danger-surface: #2A1414;
+  --color-avatar-1: #F7B538;
+  --color-avatar-2: #4FD18B;
+  --color-avatar-3: #8FA8FF;
+  --color-avatar-4: #F28FB8;
+}
+
+/* shadcn variables mapped onto the tokens */
+:root {
+  --background: #0E1220;
+  --foreground: #F3F1EA;
+  --card: #171C2E;
+  --card-foreground: #F3F1EA;
+  --popover: #171C2E;
+  --popover-foreground: #F3F1EA;
+  --primary: #F7B538;
+  --primary-foreground: #1A1405;
+  --secondary: #212842;
+  --secondary-foreground: #F3F1EA;
+  --muted: #212842;
+  --muted-foreground: #A3ABC2;
+  --accent: #212842;
+  --accent-foreground: #F3F1EA;
+  --destructive: #D92D20;
+  --border: #2C3452;
+  --input: #5E6A94;
+  --ring: #F7B538;
+  --radius: 14px;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+  }
+  input, select, textarea {
+    font-size: 16px; /* stops iOS zoom */
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.pb-safe { padding-bottom: max(28px, env(safe-area-inset-bottom)); }
+.pt-safe { padding-top: max(20px, env(safe-area-inset-top)); }
+.leaflet-container { background: #0E1220; font-family: inherit; }
+.leaflet-control-attribution { background: rgba(14,18,32,0.8) !important; color: #A3ABC2 !important; }
+.leaflet-control-attribution a { color: #F3F1EA !important; }
+.flock-tip.leaflet-tooltip {
+  background: #171C2E;
+  color: #F3F1EA;
+  border: 1px solid #2C3452;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 2px 10px;
+  box-shadow: none;
+}
+.flock-tip.leaflet-tooltip-top::before { border-top-color: #2C3452; }
+/* Dark map from standard OSM tiles: invert + rotate hue keeps water blue-ish and roads light. */
+.flock-dark-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6);
+}

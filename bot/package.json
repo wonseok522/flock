@@ -1,0 +1,19 @@
+{
+  "name": "flock-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flock worker: Supabase Realtime + polling jobs for Cognee, Notion and Discord. Runs on the demo laptop.",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "engines": { "node": ">=20.6" },
+  "scripts": {
+    "start": "node --env-file=.env index.js",
+    "check": "for f in *.js lib/*.js jobs/*.js; do node --check \"$f\" || exit 1; done"
+  },
+  "dependencies": {
+    "@notionhq/client": "^5.28.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "discord.js": "^14.27.0"
+  }
+}

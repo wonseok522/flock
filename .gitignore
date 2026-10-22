@@ -12,3 +12,6 @@ __pycache__/
 # Never commit member data
 data/private/
 *.csv
+
+# Script response cache (Overpass, Luma) and generated SQL
+.cache/

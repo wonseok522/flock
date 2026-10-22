@@ -1,0 +1,4 @@
+# Cognee local stores (root .gitignore covers .venv/, .env, .cognee_system/, .data_storage/)
+.cognee_cache/
+.cognee_system/
+.data_storage/
