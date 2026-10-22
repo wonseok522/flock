@@ -46,7 +46,7 @@ Flock keeps students safe at three moments:
 | **Notion** | Society **Safety HQ**: Safety Rules page, Incidents database, Tonight dashboard |
 | **Zero** | Growth: new members get a follow-up sequence; new societies enter an outreach pipeline |
 | **Grok Bot** | Holds the spec and community context; set up Notion and Zero; posts session reminders in Discord; reviews incidents against Safety Rules |
-| **Cursor** | Wrote the code — see [`BUILD_LOG.md`](BUILD_LOG.md) |
+| **Cursor** | Wrote the code — see [`docs/CURSOR_PROMPTS.md`](docs/CURSOR_PROMPTS.md) |
 
 ## Data sources
 
@@ -89,7 +89,7 @@ flowchart LR
 | **Notion** | Incidents database, Tonight dashboard, Safety Rules (university contacts on `/safety`) | [`bot/jobs/incidents.js`](bot/jobs/incidents.js), [`bot/jobs/dashboard.js`](bot/jobs/dashboard.js), [`bot/lib/notion.js`](bot/lib/notion.js), [`bot/notion-schema.md`](bot/notion-schema.md), [`web/src/app/api/contacts/route.ts`](web/src/app/api/contacts/route.ts) |
 | **Zero** | New verified member → `member.joined` webhook → follow-up sequence | [`web/src/app/api/zero/route.ts`](web/src/app/api/zero/route.ts), called from [`web/src/app/onboard/page.tsx`](web/src/app/onboard/page.tsx) |
 | **Grok Bot** | Spec + community context, Notion/Zero setup, bot copy, incident recommendations (synced to `/dashboard`, a human confirms) | [`docs/GROK_BOT_CONTEXT.md`](docs/GROK_BOT_CONTEXT.md), [`bot/messages.js`](bot/messages.js), `grok-sync` in [`bot/jobs/incidents.js`](bot/jobs/incidents.js), [`web/src/app/dashboard/dashboard-screen.tsx`](web/src/app/dashboard/dashboard-screen.tsx), [`web/src/app/api/dashboard/decide/route.ts`](web/src/app/api/dashboard/decide/route.ts) |
-| **Cursor** | Writes the features, one prompt per step | [`.cursor/rules/flock.mdc`](.cursor/rules/flock.mdc), [`docs/CURSOR_PROMPTS.md`](docs/CURSOR_PROMPTS.md), [`BUILD_LOG.md`](BUILD_LOG.md) |
+| **Cursor** | Writes the features, one prompt per step | [`.cursor/rules/flock.mdc`](.cursor/rules/flock.mdc), [`docs/CURSOR_PROMPTS.md`](docs/CURSOR_PROMPTS.md) |
 | Discord (chat channel) | Session threads, 15-min reminders, missed check-in / SOS alerts, `/flock` | [`bot/jobs/sessions.js`](bot/jobs/sessions.js), [`bot/jobs/checkins.js`](bot/jobs/checkins.js), [`bot/lib/discord.js`](bot/lib/discord.js) |
 | Trust signals | GitHub, Devpost, StopForumSpam | [`web/src/app/api/verify/route.ts`](web/src/app/api/verify/route.ts) |
 
@@ -137,7 +137,7 @@ The scripts read `web/.env.local`. Add `-- --sql <file>` to any seed script to w
 
 ## How it was built
 
-Grok Bot held the spec, the safety rules and the community context, and set up Notion and Zero. Cursor wrote the code, one feature per prompt. Every step is logged with the tool that did it in [`BUILD_LOG.md`](BUILD_LOG.md).
+Grok Bot held the spec, the safety rules and the community context, and set up Notion and Zero. Cursor wrote the code, one feature per prompt. Every commit message starts with the tool that did the work.
 
 ## Licence
 

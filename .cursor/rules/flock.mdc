@@ -25,7 +25,7 @@ If a partner is missing or mocked, flag it at the end of the reply.
 ## Always
 
 - Stack, repo layout, safety rules and definition of done: follow CLAUDE.md.
-- Commit messages start with `[cursor]`. Append a line to `BUILD_LOG.md` after each step.
+- Commit messages start with `[cursor]`.
 - Stations only, never home addresses. First names only. Blocklist stores sha256 hashes only.
 - A human confirms every report and block.
 - Loading, error and empty states on every async action. Labelled fallbacks for every external call.

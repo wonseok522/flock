@@ -18,14 +18,14 @@ Criteria: <which of the 6 criteria this scores> | Partners: <which partners it u
 - If a feature scores **no** criterion and uses **no** partner → **do not build it.** Tell me and suggest something that does.
 - **All six partners must be integrated and visible in the demo:** Supabase, Cognee, Zero, Notion, Grok Bot, Cursor. If any partner is missing or mocked at any point, **flag it at the end of your reply.**
 - Never fake an integration. If a partner can't be reached (missing key, API limit), build a clearly labelled fallback AND flag it.
-- Every change gets a line in `BUILD_LOG.md` saying which tool did the work (`[cursor]`, `[grok-bot]`, `[claude-code]`, `[human]`). Never credit Grok Bot or Cursor for work they didn't do.
+- Every commit message starts with the tool that did the work (`[cursor]`, `[grok-bot]`, `[claude-code]`, `[human]`). Never credit Grok Bot or Cursor for work they didn't do.
 
 ### The six judging criteria (each scored 1–5)
 
 | # | Criterion | What it means for the code |
 |---|---|---|
 | 1 | **Technical execution** | It works live, end to end, on real data. No dead buttons. Real Supabase RLS, PostGIS, Realtime. Handle errors and empty states. |
-| 2 | **How much Grok Bot and Cursor architected it** | Grok Bot holds the spec and community context and runs the safety workflows. Cursor writes the code. Keep `BUILD_LOG.md` current so we can prove it. |
+| 2 | **How much Grok Bot and Cursor architected it** | Grok Bot holds the spec and community context and runs the safety workflows. Cursor writes the code. Tagged commit messages prove it. |
 | 3 | **Use of community context** | Use the community's own data: university email domains, The Hack Collective Luma calendar, the community's Safety Rules page in Notion, walk history in Cognee. |
 | 4 | **10x–20x improvement over today's tooling** | Today: "anyone going my way?" in a group chat, ~10 min wait, no verification. Flock: verified match in <30 s with a reason. Measure and display timings. |
 | 5 | **Real-world usefulness** | A student society could switch it on next week. Mobile-first. Fast. Nothing that needs explaining. |
@@ -102,7 +102,6 @@ Criteria: <which of the 6 criteria this scores> | Partners: <which partners it u
 flock/
 ├── CLAUDE.md
 ├── README.md
-├── BUILD_LOG.md              # who built what, timestamped — evidence for criterion 2
 ├── LICENSE                   # MIT
 ├── .env.example
 ├── .gitignore
@@ -150,7 +149,7 @@ flock/
 | **Notion** | Safety Rules page (read by Grok Bot), Incidents database (written on missed check-in / 🆘 / report), Tonight dashboard | Incident appears in Notion live when a check-in is missed |
 | **Zero** | New society → organiser outreach pipeline; new member → follow-up sequence; Luma guest sync for imported events | Show the pipeline with tonight's members in it |
 | **Grok Bot** | Holds spec + community context; set up Notion and Zero; posts session reminders in Discord; reviews incidents against Safety Rules and recommends action (human decides) | Screenshot of Grok Bot doing setup + live Discord message |
-| **Cursor** | Writes the features, one prompt per step | `BUILD_LOG.md` + commit messages prefixed `[cursor]` |
+| **Cursor** | Writes the features, one prompt per step | Commit messages prefixed `[cursor]` |
 
 ---
 
@@ -198,7 +197,7 @@ Cache responses. Keep Luma calls to a few per minute (undocumented API). Send a 
 | 20:45–21:05 | Check-ins + solo timer + Notion incident + Discord bot reminders | Missed check-in creates a Notion incident |
 | 21:05–21:15 | Zero webhook + dashboard + blocklist | Blocked user cannot match |
 | 21:15–21:35 | **Live test with 5–10 real attendees.** Record timings. | Real matches in the DB |
-| 21:35–21:50 | README, BUILD_LOG, screenshots, push, submit | Public repo, MIT, submitted |
+| 21:35–21:50 | README, screenshots, push, submit | Public repo, MIT, submitted |
 
 **If behind at 20:45:** keep auth, sessions, matching, check-in, blocklist. Make Cognee a single `/trust` call. Grok Bot does Notion/Zero setup in its own app; show screenshots. Never drop a partner entirely — flag instead.
 
@@ -213,7 +212,6 @@ Cache responses. Keep Luma calls to a few per minute (undocumented API). Send a 
 - Every async action shows loading, error and empty states. No silent failures.
 - Every external call has a timeout and a demo-safe fallback that is **labelled** in the UI (e.g. "trust reason unavailable").
 - Small commits, prefixed with the tool that wrote them: `[cursor]`, `[grok-bot]`, `[claude-code]`, `[human]`.
-- After each step, append to `BUILD_LOG.md`.
 - Ask before adding a new dependency that isn't in the tech stack table.
 
 ## Safety and privacy rules (non-negotiable)
@@ -231,8 +229,7 @@ Cache responses. Keep Luma calls to a few per minute (undocumented API). Send a 
 1. Works on two phones on real Supabase data.
 2. Uses at least one partner, named in the commit.
 3. Has loading, error and empty states.
-4. Logged in `BUILD_LOG.md`.
-5. Appears in `docs/DEMO.md` if it's part of the demo.
+4. Appears in `docs/DEMO.md` if it's part of the demo.
 
 ## Commands
 

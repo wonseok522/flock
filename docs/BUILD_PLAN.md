@@ -43,7 +43,6 @@
 - `HACK_COLLECTIVE_LUMA_CAL_ID` is blank. This is a Grok Bot task (G3).
 - Demo needs a missed check-in **inside 3 minutes**, so add `CHECKIN_WINDOW_MIN` (demo: `1`, real: `45`).
 - Next.js 16+ renamed `middleware.ts` to `proxy.ts`. Cursor should follow the current `@supabase/ssr` docs for whichever version `create-next-app` installs.
-- `BUILD_LOG.md` repo-creation time was logged in KST. It's corrected to London time.
 
 ### ⚠️ Decisions that differ from CLAUDE.md (your OK needed)
 
@@ -108,7 +107,7 @@ Phases run in order. Within a phase, the three roles work in parallel. Don't sta
 | **5. Trust, growth, admin** | **Step 8** `/api/verify` + `/api/zero` · **Step 9** dashboard, report, blocklist | Help A; harden worker error handling | Blocked test account ready; Zero pipeline shows new members | Blocked user gets no match; new member appears in Zero |
 | **6. Stretch** | **Step 11** safe study spaces map · **Step 12** "Who do I call?" helper | **Step 10** scam shield | Grok Bot supplies the university contacts from the Notion Safety Rules page | Each works on two phones |
 | **7. Live test** | **5–10 real attendees** | Watch worker logs; record `seconds_to_match` | Time the group-chat baseline; screenshots | Real matches in the DB |
-| **8. Ship** | README numbers | BUILD_LOG totals | G10 Grok Bot drafts the pitch numbers; push; **submit** | Public repo, MIT, submitted |
+| **8. Ship** | README numbers | — | G10 Grok Bot drafts the pitch numbers; push; **submit** | Public repo, MIT, submitted |
 | **9. Rehearse** | Run `DEMO.md` twice on the projector | | | |
 
 ---
@@ -128,13 +127,13 @@ Phases run in order. Within a phase, the three roles work in parallel. Don't sta
 | G7 | **Review each Cursor diff** against the CLAUDE.md safety rules (addresses, surnames, raw emails, service key in browser) | Review notes → fixes |
 | G8 | **Progress check:** paste each checkpoint result; Grok Bot compares it with the spec, lists gaps and partner coverage. The team lead decides scope. | Status screenshot |
 | G9 | **Live in the demo:** "Review open incidents in Flock Safety HQ against our Safety Rules" → writes a recommendation into the incident. A human confirms on `/dashboard`. | The demo's Grok Bot beat |
-| G10 | Draft the README "Results" section and the BUILD_LOG totals from real numbers | Final docs |
+| G10 | Draft the README "Results" section from real numbers | Final docs |
 
 ## 6. Using Cursor to the full (criterion 2)
 
 - `.cursor/rules/flock.mdc` loads CLAUDE.md automatically. Paste **one** prompt from `CURSOR_PROMPTS.md` per step, in Agent mode.
 - Every Cursor reply starts with `Criteria: … | Partners: …`. Keep those screenshots as evidence.
-- Commit right after each step passes: `git commit -m "[cursor] Step N: …"`, plus one `BUILD_LOG.md` line. Pull before pushing.
+- Commit right after each step passes: `git commit -m "[cursor] Step N: …"`. Pull before pushing.
 - When a human fixes Cursor's code, commit it as `[human]`. When Claude Code helps, commit it as `[claude-code]`. The log must be truthful.
 - Ask Cursor to write the SQL that checks its own RPCs (Step 0). Tested RPCs prevent the "it doesn't match" panic at 21:15.
 
@@ -151,7 +150,7 @@ Phases run in order. Within a phase, the three roles work in parallel. Don't sta
 
 ## 8. Demo evidence checklist
 
-- [ ] `BUILD_LOG.md`: every step tagged; totals filled in
+- [ ] Every commit tagged with the tool that did it
 - [ ] `docs/evidence/`: Grok Bot setup, Notion HQ, Zero pipeline, Cursor `Criteria:` replies
 - [ ] Real numbers in `DEMO.md`: matches tonight, average seconds to match, group-chat baseline
 - [ ] Worker and ai-service running on the demo laptop; fallback labels visible if they stop

@@ -44,8 +44,7 @@ SAFETY RULES (non-negotiable):
 - The SOS screen shows "call 999" first.
 
 YOUR JOBS (full list and order: docs/BUILD_PLAN.md section 5). The team
-logs each one in BUILD_LOG.md as [grok-bot] and screenshots it into
-docs/evidence/. If you can't act in a tool directly, give exact click-by-click
+screenshots each one into docs/evidence/. If you can't act in a tool directly, give exact click-by-click
 steps; a human does them and logs "[human] (spec from grok-bot)".
 
 G1. Restate this plan as a task board with owners A (web), B (data +
@@ -105,8 +104,7 @@ G9. RUNTIME: when asked "Review open incidents in Flock Safety HQ", read each
     recommendation": confirm / reject / follow up + one-line reason that
     cites the rule. Never block anyone yourself; a human confirms on the
     Flock dashboard.
-G10. Draft the README "Results" section and BUILD_LOG totals from the real
-    numbers I paste.
+G10. Draft the README "Results" section from the real numbers I paste.
 
 WHO DOES WHAT AT RUNTIME: the Flock worker (bot/, written by Cursor) creates
 Discord threads, posts reminders and alerts, and writes Notion incidents. You

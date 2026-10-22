@@ -4,7 +4,6 @@ Paste-ready prompts for the work left before code freeze. Each one is real partn
 
 After each task:
 - Screenshot it into `docs/evidence/` (no private data).
-- Add one line to `BUILD_LOG.md` with the tool that did it (`[grok-bot]` or `[cursor]`).
 - Cursor commits start with `[cursor]`.
 
 ---
@@ -142,7 +141,7 @@ already installed). Print precision, recall, F1 and a confusion matrix, and
 save the results to docs/evidence/scam-filter-eval.md. Then add a
 bot/lib/scam.js using the same rules, and make the worker flag scam-like
 messages in session threads by drafting a warning for a human to post
-(never auto-delete or ban). Log the accuracy line in BUILD_LOG.md.
+(never auto-delete or ban). Put the accuracy line in the README.
 ```
 
 ### Cursor task 3: polish pass

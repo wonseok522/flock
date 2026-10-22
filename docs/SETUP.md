@@ -162,7 +162,7 @@ Paste [`GROK_BOT_CONTEXT.md`](GROK_BOT_CONTEXT.md) into Grok Bot and run **G2**.
 | `Avg seconds to match` | Number |
 | `Missed check-ins` | Number |
 
-If Grok Bot can't create them directly, it gives click-by-click steps; a human does them and logs `[human] (spec from grok-bot)` in `BUILD_LOG.md`.
+If Grok Bot can't create them directly, it gives click-by-click steps; a human does them and commits with `[human] (spec from grok-bot)`.
 
 ### C3. Share with the integration and copy the IDs
 
@@ -269,4 +269,4 @@ cd bot && npm start
 cd web && npm run dev
 ```
 
-If Cognee, Notion or Discord is missing, the worker logs one `DISABLED` line and the app shows a labelled fallback (for example "Cognee reason unavailable"). Any fallback used in the demo must be said out loud and flagged in `BUILD_LOG.md`.
+If Cognee, Notion or Discord is missing, the worker logs one `DISABLED` line and the app shows a labelled fallback (for example "Cognee reason unavailable"). Any fallback used in the demo must be said out loud.

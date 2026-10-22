@@ -2,7 +2,7 @@
 
 Plan, owners and times: [`BUILD_PLAN.md`](BUILD_PLAN.md). **A** = web, **B** = data + worker.
 
-After each step: test it, commit with `[cursor] Step N: …`, and append one line to `BUILD_LOG.md`.
+After each step: test it, then commit with `[cursor] Step N: …`.
 
 Every prompt starts with the same header:
 
