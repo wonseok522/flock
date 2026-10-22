@@ -8,6 +8,7 @@ import { ArrowLeft, Check, Clock, MapPin, Search, ShieldCheck, TrainFront, X } f
 import { Button } from "@/components/ui/button";
 import { Screen, ScreenTitle } from "@/components/app-shell";
 import { Avatar, Card, EmptyState, ErrorCard, Eyebrow, PrivacyNote, Skeleton, Spinner, TimeChip, VerifiedBadge } from "@/components/flock";
+import { FlyingFlock } from "@/components/birds";
 import { supabase } from "@/lib/supabase/client";
 import { useMember } from "@/lib/use-member";
 import { friendlyError } from "@/lib/errors";
@@ -318,7 +319,7 @@ function PickStep({ session, onRequested }: { session: SessionOverview; onReques
                   setQuery(e.target.value);
                   setSearching(true);
                 }}
-                className="h-[52px] w-full rounded-[14px] border border-line-strong bg-surface pr-11 pl-12 text-[16px] text-text placeholder:text-muted/70 focus:border-amber focus:outline-none"
+                className="h-[52px] w-full rounded-[14px] border border-line-strong bg-surface pr-11 pl-12 text-[16px] text-text placeholder:text-muted focus:border-amber focus:outline-none"
               />
               {searching && stations && <Spinner className="absolute top-1/2 right-4 -translate-y-1/2 text-muted" />}
             </div>
@@ -335,8 +336,9 @@ function PickStep({ session, onRequested }: { session: SessionOverview; onReques
           ) : stations.length === 0 ? (
             <EmptyState title={`No stations match "${query.trim()}"`} body="Try part of the name, like “King's” or “Euston”." />
           ) : (
+            <>
+            {!query.trim() && <Eyebrow className="pt-1">{hasVenue ? "Nearest to the session" : "Nearby stations"}</Eyebrow>}
             <ul className="flex flex-col gap-2" aria-label={query.trim() ? "Matching stations" : "Nearest stations"}>
-              {!query.trim() && <Eyebrow className="pt-1">{hasVenue ? "Nearest to the session" : "Nearby stations"}</Eyebrow>}
               {stations.slice(0, 8).map((s) => (
                 <li key={s.id}>
                   <button
@@ -351,6 +353,7 @@ function PickStep({ session, onRequested }: { session: SessionOverview; onReques
                 </li>
               ))}
             </ul>
+            </>
           )}
         </div>
       )}
@@ -598,10 +601,7 @@ function WaitStep({
 
       {!selected && (
         <Card className="flex flex-col items-center gap-3 py-8 text-center">
-          <span className="relative flex size-3" aria-hidden="true">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber opacity-60" />
-            <span className="relative inline-flex size-3 rounded-full bg-amber" />
-          </span>
+          <FlyingFlock />
           <p className="text-[15px] font-semibold text-muted">Looking for</p>
           <p className="font-mono text-[48px] leading-none font-semibold text-amber" role="timer" aria-live="off">
             {elapsed(waitingSeconds)}

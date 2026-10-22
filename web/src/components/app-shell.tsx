@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { CalendarDays, MoonStar, ShieldCheck, Users } from "lucide-react";
+import { Bird, CalendarDays, MoonStar, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { href: "/", label: "Tonight", icon: MoonStar },
   { href: "/sessions", label: "Sessions", icon: CalendarDays },
-  { href: "/groups", label: "Groups", icon: Users },
+  { href: "/groups", label: "Groups", icon: Bird },
   { href: "/safety", label: "Safety", icon: ShieldCheck },
 ] as const;
 

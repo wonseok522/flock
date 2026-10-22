@@ -1,15 +1,12 @@
 import type { ReactNode } from "react";
 import { BadgeCheck, CircleAlert, Loader2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Bird, FlockMark, FlyingFlock } from "@/components/birds";
 
 export function Logo({ size = 28, withWordmark = true }: { size?: number; withWordmark?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2">
-      <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <path d="M6 12l10-6 10 6" stroke="#F7B538" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6 19l10-6 10 6" stroke="#F7B538" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6 26l10-6 10 6" stroke="#F3F1EA" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <FlockMark size={size} />
       {withWordmark && <span className="text-[22px] font-extrabold tracking-[-0.02em]">Flock</span>}
     </span>
   );
@@ -84,8 +81,10 @@ export function Skeleton({ className }: { className?: string }) {
 export function LoadingScreen({ label = "Loading…" }: { label?: string }) {
   return (
     <div className="flex flex-col gap-4 px-5 pt-14" role="status" aria-live="polite">
-      <span className="sr-only">{label}</span>
-      <Skeleton className="h-8 w-40" />
+      <div className="flex items-center gap-3">
+        <FlyingFlock />
+        <span className="text-[15px] font-semibold text-muted">{label}</span>
+      </div>
       <Skeleton className="h-52" />
       <Skeleton className="h-20" />
       <Skeleton className="h-20" />
@@ -116,6 +115,11 @@ export function ErrorCard({ message, onRetry }: { message: string; onRetry?: () 
 export function EmptyState({ title, body, action }: { title: string; body?: string; action?: ReactNode }) {
   return (
     <div className="rounded-[22px] border border-dashed border-line-strong p-6 text-center">
+      <span className="mb-3 flex items-end justify-center gap-1.5" aria-hidden="true">
+        <Bird width={18} tone="muted" />
+        <Bird width={26} />
+        <Bird width={18} tone="muted" />
+      </span>
       <p className="text-[17px] font-extrabold">{title}</p>
       {body && <p className="mt-1 text-[15px] text-muted">{body}</p>}
       {action && <div className="mt-4">{action}</div>}

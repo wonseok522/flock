@@ -14,6 +14,6 @@ export async function GET(request: NextRequest) {
     if (!error) return NextResponse.redirect(new URL(safeNext, url.origin));
   }
   const back = new URL("/login", url.origin);
-  back.searchParams.set("error", "That link opened in a different browser. Type the code from the email instead.");
+  back.searchParams.set("error", "link");
   return NextResponse.redirect(back);
 }

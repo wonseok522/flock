@@ -178,7 +178,7 @@ export function SoloNewScreen() {
                 )}
               >
                 <span className="text-[15px] font-bold">{s.title}</span>
-                <span className="font-mono text-[12px] text-muted">{relativeEnd(s.ends_at)}</span>
+                <span className="font-mono text-[13px] text-muted">{relativeEnd(s.ends_at)}</span>
               </button>
             ))}
           </div>
@@ -216,7 +216,7 @@ export function SoloNewScreen() {
                 placeholder="Search stations, e.g. Camden Town"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="h-[52px] w-full rounded-[14px] border border-line-strong bg-surface pr-4 pl-12 text-[16px] text-text placeholder:text-muted/70 focus:border-amber focus:outline-none"
+                className="h-[52px] w-full rounded-[14px] border border-line-strong bg-surface pr-4 pl-12 text-[16px] text-text placeholder:text-muted focus:border-amber focus:outline-none"
               />
             </div>
             {stationsError ? (

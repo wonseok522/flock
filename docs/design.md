@@ -177,7 +177,21 @@ Inline stroke icons (Lucide, which ships with shadcn), 2–2.5px stroke, `curren
 
 ### Logo
 
-Three stacked chevrons ("birds"): two amber, one off-white. Wordmark "Flock" in Manrope 800.
+Three gull-style birds flying together, two amber and one off-white (a flock: nobody walks alone). Wordmark "Flock" in Manrope 800. Code: `FlockMark` / `Logo` in `web/src/components/`. Favicon `src/app/icon.svg`, home-screen icon `src/app/apple-icon.png`.
+
+### Birds
+
+Birds are the brand, so they appear across the app. All bird shapes use the single `BIRD_PATH` in `web/src/components/birds.tsx`.
+
+| Component | Where | Notes |
+|---|---|---|
+| `FlockSky` | Every screen (root layout) | ~18 birds around the edges at 25–50% opacity with slow drift and wing flaps, plus a small V that crosses the top every ~40 s. Fixed layer behind all content (`-z-10`, `pointer-events-none`, `aria-hidden`). Cards cover it, so text contrast is unchanged. |
+| `HeroFlock` | Sign in | Big V formation above the headline, gently gliding. |
+| `FlyingFlock` | Loading screens, "Looking for a buddy" | Three flapping birds instead of a spinner dot. |
+| Bird trio | `EmptyState` | Small static birds above the title. |
+| Lucide `Bird` | Groups tab | Your verified communities are your flocks. |
+
+Rules: birds are always decorative and never carry meaning. They are never red, never placed on the SOS screen (its `danger-ground` covers the sky), and all bird motion stops under `prefers-reduced-motion`; the crossing V is hidden.
 
 ---
 
@@ -286,3 +300,7 @@ Build these with the same tokens and components:
 ## 12. Audit notes (22 Oct, 20:15)
 
 Fixed above: Tailwind v4 tokens instead of `tailwind.config.ts`; `green`/`red` vs `safe`/`danger` naming; shadcn variable mapping; new `line-strong` token for inputs (`line` was 1.5:1); 11px tab labels raised to 12px; "I'm calling him" changed to "them"; sign in uses a code; the Groups tab is defined; live location rules (team decision); pick from up to 3 matches (team decision); CARTO attribution; straight-line routes only; London time zone; emoji rule overrides CLAUDE.md; missing screens listed.
+
+## 13. Audit notes (23 Oct)
+
+Brand: chevron logo replaced by the three-bird mark; birds added across the app (section 5, "Birds"). Fixed: `/sos` is reachable without sign-in so 999 always shows; SOS "cancel" copy is honest ("Back to my walk" after an alert, since leaving doesn't stand it down); `/login?error=` only shows fixed copy for known codes; placeholder contrast; ended-session rows no longer fade below AA; 44px "Not you?"; invisible `<select>` chevron; `<p>` inside `<ul>`; 12px time raised to 13px; arrows hidden from screen readers; developer text removed from Safety HQ; unused `ui/input`, `ui/label` and create-next-app SVGs removed. Still open: show the location reason before the buddy walk's permission prompt, add a focus trap to the Report sheet, give `ErrorCard` a variant for the SOS screen, align the Cognee fallback timeout (30 s) with its 10 s comment.

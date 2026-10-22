@@ -160,7 +160,7 @@ export function EventRow({
   showDay?: boolean;
 }) {
   return (
-    <li className={cn("flex items-center gap-3 border-b border-line py-3 last:border-b-0", dim && "opacity-70")}>
+    <li className={cn("flex items-center gap-3 border-b border-line py-3 last:border-b-0", dim && "[&_.font-mono]:text-muted")}>
       <Link href={`/sessions/${session.id}`} className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-[12px] active:bg-surface-2/60">
         <span className="w-[52px] shrink-0 text-center">
           <span className="block font-mono text-[17px] font-semibold text-amber">{hhmm(session.ends_at)}</span>

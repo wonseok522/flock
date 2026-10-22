@@ -5,11 +5,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorCard, Logo, PrivacyNote, Spinner } from "@/components/flock";
+import { HeroFlock } from "@/components/birds";
 import { supabase } from "@/lib/supabase/client";
 import { friendlyError } from "@/lib/errors";
 
 // Client-side hint only. The real check is the onboard() RPC, which reads the
 // email from auth.users and compares it with communities.allowed_email_domains.
+// Fixed copy for ?error= codes, so nobody can put their own text in an official-looking error card.
+const LOGIN_ERRORS: Record<string, string> = {
+  link: "That link opened in a different browser. Type the code from the email instead.",
+};
+
 function looksLikeUniversityEmail(email: string): boolean {
   const domain = email.split("@")[1]?.toLowerCase() ?? "";
   return domain.endsWith(".ac.uk") || domain === "demo.flock.test";
@@ -23,7 +29,7 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(params.get("error"));
+  const [error, setError] = useState<string | null>(LOGIN_ERRORS[params.get("error") ?? ""] ?? null);
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +77,8 @@ export function LoginScreen() {
         <Logo size={34} />
       </div>
 
+      {step === "email" && <HeroFlock className="mt-10" />}
+
       {step === "email" ? (
         <form onSubmit={sendCode} className="mt-auto flex flex-col gap-5 pb-4">
           <div>
@@ -88,7 +96,7 @@ export function LoginScreen() {
               placeholder="name@ucl.ac.uk"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-[52px] rounded-[14px] border border-line-strong bg-surface px-4 text-[16px] text-text placeholder:text-muted/70 focus:border-amber focus:outline-none"
+              className="h-[52px] rounded-[14px] border border-line-strong bg-surface px-4 text-[16px] text-text placeholder:text-muted focus:border-amber focus:outline-none"
             />
           </div>
           {error && <ErrorCard message={error} />}

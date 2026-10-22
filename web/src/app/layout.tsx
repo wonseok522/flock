@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Manrope } from "next/font/google";
+import { FlockSky } from "@/components/birds";
 import "./globals.css";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
@@ -21,7 +22,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-GB" className={`${manrope.variable} ${jetbrains.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-ink text-text">{children}</body>
+      <body className="flex min-h-full flex-col bg-ink text-text">
+        <FlockSky />
+        {children}
+      </body>
     </html>
   );
 }

@@ -455,8 +455,8 @@ export function WalkScreen() {
           <li className="flex items-center gap-2.5">
             <TrainFront className="size-5 shrink-0 text-amber" aria-hidden="true" />
             <span>
-              You → <span className="font-bold">{match.my_station}</span>
-              {match.buddy_station !== match.my_station ? <> · {buddy} → <span className="font-bold">{match.buddy_station}</span></> : <> · same station</>}
+              You <span aria-hidden="true">→</span><span className="sr-only">to</span> <span className="font-bold">{match.my_station}</span>
+              {match.buddy_station !== match.my_station ? <> · {buddy} <span aria-hidden="true">→</span><span className="sr-only">to</span> <span className="font-bold">{match.buddy_station}</span></> : <> · same station</>}
             </span>
           </li>
           {match.buddy_leave_at && (
@@ -665,7 +665,7 @@ function ReportSheet({ matchId, buddy, onClose }: { matchId: string; buddy: stri
                     value={k.value}
                     checked={kind === k.value}
                     onChange={() => setKind(k.value)}
-                    className="size-5 accent-[#F7B538]"
+                    className="size-5 accent-amber"
                   />
                   <span>
                     <span className="block text-[16px] font-bold">{k.label}</span>
@@ -687,7 +687,7 @@ function ReportSheet({ matchId, buddy, onClose }: { matchId: string; buddy: stri
                 value={evidence}
                 onChange={(e) => setEvidence(e.target.value)}
                 placeholder="Describe what happened, when and where."
-                className="rounded-[14px] border border-line-strong bg-ink px-4 py-3 text-[16px] text-text placeholder:text-muted/70 focus:border-amber focus:outline-none"
+                className="rounded-[14px] border border-line-strong bg-ink px-4 py-3 text-[16px] text-text placeholder:text-muted focus:border-amber focus:outline-none"
               />
               <p className={cn("text-[13px]", tooShort ? "text-muted" : "text-safe")}>
                 {tooShort ? `At least 10 characters (${evidence.trim().length}/10)` : "Thanks, that's enough detail."}

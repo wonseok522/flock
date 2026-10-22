@@ -165,7 +165,7 @@ export function SosScreen() {
             className="text-text"
             onClick={() => router.push(backHref)}
           >
-            I&apos;m safe, cancel
+            {alert.step === "sent" ? "Back to my walk" : "I'm safe, go back"}
           </Button>
         </div>
       </div>

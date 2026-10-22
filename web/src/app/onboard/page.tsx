@@ -79,7 +79,7 @@ export default function OnboardPage() {
             aria-describedby="gh-hint"
             value={github}
             onChange={(e) => setGithub(e.target.value.replace(/^@/, ""))}
-            className="h-[52px] rounded-[14px] border border-line-strong bg-surface px-4 text-[16px] placeholder:text-muted/70 focus:border-amber focus:outline-none"
+            className="h-[52px] rounded-[14px] border border-line-strong bg-surface px-4 text-[16px] placeholder:text-muted focus:border-amber focus:outline-none"
           />
           <p id="gh-hint" className="text-[13px] text-muted">Adds trust reasons like “GitHub since 2019”.</p>
         </div>
@@ -89,7 +89,7 @@ export default function OnboardPage() {
         </Button>
         <PrivacyNote>
           Signed in as {email ?? "…"}. Your email is never shown to anyone.{" "}
-          <button type="button" onClick={signOut} className="font-semibold text-text underline underline-offset-4">Not you?</button>
+          <button type="button" onClick={signOut} className="inline-flex min-h-11 items-center font-semibold text-text underline underline-offset-4">Not you?</button>
         </PrivacyNote>
       </form>
     </main>

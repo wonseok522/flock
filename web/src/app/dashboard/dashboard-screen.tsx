@@ -529,7 +529,7 @@ export function DashboardScreen() {
                 Open in Notion <ExternalLink className="size-4" aria-hidden="true" />
               </a>
             ) : (
-              <p className="text-[15px] text-muted">Not linked yet (set NOTION_RULES_PAGE_ID).</p>
+              <p className="text-[15px] text-muted">Safety rules aren&apos;t linked yet.</p>
             )}
             <p className="text-[13px] text-muted">Grok Bot reviews each incident against these rules. A human decides.</p>
           </div>

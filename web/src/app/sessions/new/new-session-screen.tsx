@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Crosshair, MapPin, Plus } from "lucide-react";
+import { ArrowLeft, Crosshair, MapPin, Plus, ChevronDown } from "lucide-react";
 import { Screen } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { EmptyState, ErrorCard, LoadingScreen, PrivacyNote, Skeleton, Spinner } from "@/components/flock";
@@ -18,7 +18,7 @@ import { useRpc } from "../shared";
 const HQ: MapPoint = { lat: 51.4951, lng: -0.2282 }; // Expedite London HQ, 7 Lyric Square
 
 const inputClass =
-  "h-[52px] w-full rounded-[14px] border border-line-strong bg-surface px-4 text-[16px] text-text placeholder:text-muted/70 focus:border-amber focus:outline-none";
+  "h-[52px] w-full rounded-[14px] border border-line-strong bg-surface px-4 text-[16px] text-text placeholder:text-muted focus:border-amber focus:outline-none";
 const labelClass = "text-[13px] font-semibold text-muted";
 
 function geoMessage(err: GeolocationPositionError): string {
@@ -140,18 +140,21 @@ export function NewSessionScreen() {
         <form onSubmit={submit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <label htmlFor="community" className={labelClass}>Community</label>
+            <div className="relative">
             <select
               id="community"
               required
               value={selected}
               onChange={(e) => setCommunity(e.target.value)}
-              className={`${inputClass} appearance-none`}
+              className={`${inputClass} appearance-none pr-11`}
             >
               {list.length > 1 && <option value="">Choose a community</option>}
               {list.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            <ChevronDown className="pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2 text-muted" aria-hidden="true" />
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">

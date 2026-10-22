@@ -151,3 +151,31 @@
 .flock-dark-tiles {
   filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.6);
 }
+
+/* Birds: docs/design.md section 5 "Birds". Slow and quiet; all motion stops under reduced motion. */
+@keyframes bird-flap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.45) translateY(1px); }
+}
+@keyframes bird-drift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(14px, -8px); }
+  50% { transform: translate(26px, 2px); }
+  75% { transform: translate(10px, 9px); }
+}
+@keyframes bird-migrate {
+  0% { transform: translate(-60px, 24px); }
+  100% { transform: translate(calc(100vw + 60px), -36px); }
+}
+@keyframes bird-glide {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.bird-flap { transform-origin: 50% 55%; transform-box: fill-box; animation: bird-flap 1.3s ease-in-out infinite; }
+.bird-drift { animation: bird-drift 26s ease-in-out infinite; }
+.bird-migrate { animation: bird-migrate 38s linear infinite; animation-delay: 4s; transform: translate(-60px, 24px); }
+.bird-glide { animation: bird-glide 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .bird-flap, .bird-drift, .bird-glide { animation: none !important; }
+  .bird-migrate { display: none; }
+}
