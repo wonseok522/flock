@@ -25,6 +25,7 @@ Tags: `[grok-bot]` · `[cursor]` · `[claude-code]` · `[human]`
 | 21:15 | [claude-code] | Seeded 598 Greater London stations (OSM Overpass), tonight's hackathon event (Luma JSON), 8 synthetic demo users; scripts/ + root package.json | Supabase |
 | 21:20 | [claude-code] | Hid blocked members from session rosters; Mark safe closes the walk/timer; production build passes (23 routes) | Supabase |
 | 21:12 | [claude-code] | Sign-in: "I already have a code" path (works before custom SMTP is set up) | Supabase |
+| 21:25 | [claude-code] | docs/FINAL_HOUR.md: paste-ready Grok Bot (G2 Notion, G5 Zero, G7 review, G9 incident review) and Cursor (study spaces, scam shield, polish) prompts | — |
 | | [grok-bot] | | |
 | | [cursor] | | |
 
